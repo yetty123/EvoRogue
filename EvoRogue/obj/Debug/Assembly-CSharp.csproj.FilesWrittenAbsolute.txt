@@ -1,0 +1,17 @@
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/johndaly/EvoRogue/EvoRogue/obj/Debug/Assembly-CSharp.dll
+/Users/johndaly/EvoRogue/EvoRogue/obj/Debug/Assembly-CSharp.dll.mdb
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/UnityEngine.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/UnityEditor.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Mono.Cecil.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Unity.DataContract.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/johndaly/EvoRogue/EvoRogue/Temp/bin/Debug/Mono.Cecil.Mdb.dll
