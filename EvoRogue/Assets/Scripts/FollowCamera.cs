@@ -7,11 +7,11 @@ public class FollowCamera : MonoBehaviour {
   public const int MAX_SIZE = 15;
 
   public Transform player;
-  public Camera camera;
+  public Camera followCamera;
 
 	// Use this for initialization
 	void Start () {
-    camera = GetComponent<Camera> ();
+    followCamera = GetComponent<Camera> ();
 	}
 	
 	// Update is called once per frame
@@ -27,13 +27,13 @@ public class FollowCamera : MonoBehaviour {
 
   void CameraZoom()
   {
-    if (camera.orthographicSize == MAX_SIZE)
+    if (followCamera.orthographicSize == MAX_SIZE)
     {
-      camera.orthographicSize = DEFAULT_SIZE;
+      followCamera.orthographicSize = DEFAULT_SIZE;
     }
     else
     {
-      camera.orthographicSize += 5;
+      followCamera.orthographicSize += 5;
     }
   }
 }
