@@ -38,9 +38,8 @@ public class PlayerController : MonoBehaviour
     else if (yMove != 0)
       xMove = 0;
 
-    if ((xMove != 0 || yMove != 0) && !moving)
+    if ((xMove != 0 || yMove != 0) && !moving && GameMgr.Instance.playersTurn)
     {
-
       Vector3 start = transform.position;
       Vector3 end = start + new Vector3 (xMove, yMove);
 
@@ -71,5 +70,6 @@ public class PlayerController : MonoBehaviour
     // Allows the player to move again
     // now that the current move is complete
     moving = false;
+    GameMgr.Instance.playersTurn = false;
   }
 }

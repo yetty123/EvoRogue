@@ -18,6 +18,7 @@ public class MapGenerator : MonoBehaviour
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
   public GameObject player;
+  public GameObject enemy;
 
   private Tile[][] map;
   private List<Room> rooms;
@@ -34,6 +35,18 @@ public class MapGenerator : MonoBehaviour
     float playerX = rooms[0].X + rooms[0].Width / 2;
     float playerY = rooms[0].Y + rooms[0].Height / 2;
     Instantiate (player, new Vector2 (playerX, playerY), Quaternion.identity);
+    GenerateEnemies ();
+  }
+
+  void GenerateEnemies()
+  {
+    for (int i = 0; i < 5; i++)
+    {
+      int roomNum = Random.Range (0, rooms.Count);
+      Point randPos = rooms[roomNum].GetRandomPoint ();
+      Debug.Log (randPos.x + " " + randPos.y);
+      Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
+    }
   }
 
   // Create the array which holds the map data
