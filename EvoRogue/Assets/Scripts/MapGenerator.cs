@@ -4,6 +4,8 @@ using System.Collections.Generic;
 public class MapGenerator : MonoBehaviour
 {
 
+  public static MapGenerator Instance;
+
   public enum Tile
   {
     Wall,
@@ -17,16 +19,25 @@ public class MapGenerator : MonoBehaviour
   public Point roomHeight = new Point (3, 6);
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
-  public GameObject player;
+  public GameObject exit;
   public GameObject enemy;
 
   private Tile[][] map;
   private List<Room> rooms;
   private GameObject mapHolder;
 
-  private void Start()
+  void Start()
   {
+    GenerateLevel ();
+  }
 
+  void Awake()
+  {
+    Instance = this;
+  }
+
+  public void GenerateLevel()
+  {
     mapHolder = new GameObject ("MapHolder");
     rooms = new List<Room> ();
     SetupMapArray ();
@@ -34,8 +45,11 @@ public class MapGenerator : MonoBehaviour
     InstantiateTiles ();
     float playerX = rooms[0].X + rooms[0].Width / 2;
     float playerY = rooms[0].Y + rooms[0].Height / 2;
-    Instantiate (player, new Vector2 (playerX, playerY), Quaternion.identity);
+    GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
     GenerateEnemies ();
+    float exitX = rooms[1].X + rooms[1].Width / 2;
+    float exitY = rooms[1].Y + rooms[1].Height / 2;
+    Instantiate (exit, new Vector2 (exitX, exitY), Quaternion.identity);
   }
 
   void GenerateEnemies()

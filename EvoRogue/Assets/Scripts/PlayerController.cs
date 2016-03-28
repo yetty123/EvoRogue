@@ -8,12 +8,10 @@ public class PlayerController : MonoBehaviour
   public float moveSpeed;
   public bool moving;
 
-  private Rigidbody2D body;
-
   // Use this for initialization
   void Start ()
   {
-    body = GetComponent<Rigidbody2D> ();
+    obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
     moving = false;
   }
 	
@@ -52,7 +50,17 @@ public class PlayerController : MonoBehaviour
         StartCoroutine (Move (xMove, yMove));
         moving = true;
       }
+      else if (checkValid.collider.gameObject.tag == "Enemy")
+      {
+        Attack (checkValid.collider.gameObject);
+      }
     }
+  }
+
+  void Attack(GameObject enemy)
+  {
+    Debug.Log ("Player attacks Enemy");
+    enemy.GetComponent<Enemy> ().Defend (Player.Instance.attackPower);
   }
 
   IEnumerator Move(int x, int y)

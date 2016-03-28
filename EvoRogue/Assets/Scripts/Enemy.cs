@@ -7,11 +7,17 @@ public class Enemy : MonoBehaviour {
   public LayerMask obstacleLayer;
   public List<Sprite> enemySprites;
   public float moveSpeed;
+  public int health;
+  public int attackPower;
+  public int defense;
 
 	// Use this for initialization
 	void Start () {
     int spriteChoice = Random.Range (0, enemySprites.Count);
     GetComponent<SpriteRenderer> ().sprite = enemySprites[spriteChoice];
+
+    obstacleLayer |= 1 << LayerMask.NameToLayer ("Player");
+    obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
     GameMgr.Instance.AddEnemy (this);
 	}
 
@@ -42,12 +48,36 @@ public class Enemy : MonoBehaviour {
     Vector3 end = start + new Vector3 (xMove, yMove);
 
     // Check if we can move to the next tile
-    RaycastHit2D checkValid = Physics2D.Linecast (start, end, obstacleLayer);
+    RaycastHit2D checkValid = Physics2D.Linecast (end, end, obstacleLayer);
 
     // Collider will be null if the linecast didn't hit an obstacle
     if (checkValid.collider == null)
     {
       StartCoroutine (Move (xMove, yMove));
+    }
+    else if (checkValid.collider.gameObject.tag == "Player")
+    {
+      Attack ();
+    }
+    else
+    {
+      Debug.Log (checkValid.collider.gameObject.tag);
+    }
+  }
+
+  void Attack()
+  {
+    Player.Instance.Defend (attackPower);
+  }
+
+  public void Defend(int attack)
+  {
+    int damage = Mathf.Max (attack - defense, 0);
+    health -= damage;
+    if (health < 0)
+    {
+      GameMgr.Instance.KillEnemy (this);
+      Destroy (gameObject);
     }
   }
 

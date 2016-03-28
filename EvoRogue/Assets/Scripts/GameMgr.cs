@@ -21,15 +21,37 @@ public class GameMgr : MonoBehaviour {
   {
     if (playersTurn || enemiesMoving)
     {
+      if (Input.GetKeyDown ("e"))
+      {
+        ResetLevel ();
+      }
       return;
     }
 
     StartCoroutine (MoveEnemies ());
 	}
 
+  public void ResetLevel()
+  {
+    Destroy (GameObject.Find("MapHolder"));
+    Destroy (GameObject.Find ("Exit(Clone)"));
+    for (int i = 0; i < enemies.Count; i++)
+    {
+      Destroy (enemies[i].gameObject);
+    }
+    enemies.Clear ();
+    MapGenerator.Instance.GenerateLevel ();
+  }
+
   public void AddEnemy(Enemy enemy)
   {
     enemies.Add (enemy);
+  }
+
+  public void KillEnemy(Enemy enemy)
+  {
+    Debug.Log ("Enemy killed");
+    enemies.Remove (enemy);
   }
 
   IEnumerator MoveEnemies()
@@ -38,7 +60,10 @@ public class GameMgr : MonoBehaviour {
     for (int i = 0; i < enemies.Count; i++)
     {
       enemies[i].TryMove ();
-      yield return null;
+      // Wait to prevent enemies from occupying
+      // the same tile. We should find a better
+      // way of doing this.
+      yield return new WaitForSeconds (0.1f);;
     }
 
     playersTurn = true;
