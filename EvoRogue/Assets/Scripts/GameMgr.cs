@@ -21,10 +21,6 @@ public class GameMgr : MonoBehaviour {
   {
     if (playersTurn || enemiesMoving)
     {
-      if (Input.GetKeyDown ("e"))
-      {
-        ResetLevel ();
-      }
       return;
     }
 
@@ -63,7 +59,7 @@ public class GameMgr : MonoBehaviour {
       // Wait to prevent enemies from occupying
       // the same tile. We should find a better
       // way of doing this.
-      yield return new WaitForSeconds (0.1f);;
+      yield return new WaitForSeconds (0.01f);;
     }
 
     playersTurn = true;

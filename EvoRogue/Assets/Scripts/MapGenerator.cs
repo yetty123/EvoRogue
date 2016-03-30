@@ -12,11 +12,12 @@ public class MapGenerator : MonoBehaviour
     Ground
   }
 
-  public int mapWidth = 30;
-  public int mapHeight = 30;
+  public int mapWidth = 40;
+  public int mapHeight = 40;
+  public int numEnemies = 5;
   public Point numRooms = new Point (5, 15);
-  public Point roomWidth = new Point (3, 6);
-  public Point roomHeight = new Point (3, 6);
+  public Point roomWidth = new Point (3, 8);
+  public Point roomHeight = new Point (3, 8);
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
   public GameObject exit;
@@ -43,18 +44,18 @@ public class MapGenerator : MonoBehaviour
     SetupMapArray ();
     GenerateRooms (Random.Range (numRooms.x, numRooms.y));
     InstantiateTiles ();
-    float playerX = rooms[0].X + rooms[0].Width / 2;
-    float playerY = rooms[0].Y + rooms[0].Height / 2;
+    float playerX = rooms[0].X + Mathf.Floor(rooms[0].Width / 2);
+    float playerY = rooms[0].Y + Mathf.Floor(rooms[0].Height / 2);
     GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
     GenerateEnemies ();
     float exitX = rooms[1].X + rooms[1].Width / 2;
     float exitY = rooms[1].Y + rooms[1].Height / 2;
-    Instantiate (exit, new Vector2 (exitX, exitY), Quaternion.identity);
+    Instantiate (exit, new Vector3 (exitX, exitY, -1.0f), Quaternion.identity);
   }
 
   void GenerateEnemies()
   {
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < numEnemies; i++)
     {
       int roomNum = Random.Range (0, rooms.Count);
       Point randPos = rooms[roomNum].GetRandomPoint ();
@@ -105,7 +106,7 @@ public class MapGenerator : MonoBehaviour
 
   void MakeYPath(Point topPt, Point bottomPt)
   {
-    for (int y = topPt.y; y < bottomPt.y; y++)
+    for (int y = topPt.y; y <= bottomPt.y; y++)
     {
       map[y][topPt.x] = Tile.Ground;
     }
@@ -158,7 +159,7 @@ public class MapGenerator : MonoBehaviour
 
   void GenerateRooms(int nRooms)
   {
-    int nTries = 5;
+    int nTries = 15;
     int roomsMade = 0;
 
     while ((roomsMade < nRooms) && nTries > 0)
@@ -171,7 +172,7 @@ public class MapGenerator : MonoBehaviour
       if (AddRoom (newRoom))
       {
         roomsMade += 1;
-        nTries = 5;
+        nTries = 15;
       }
       else
       {
@@ -197,7 +198,7 @@ public class MapGenerator : MonoBehaviour
     {
       for (int x = 0; x < mapWidth; x++)
       {
-        GameObject tile = wallTiles[0];
+        GameObject tile = wallTiles[Random.Range(0, wallTiles.Length)];
         if (map[y][x] == Tile.Ground)
         {
           tile = groundTiles[0];
