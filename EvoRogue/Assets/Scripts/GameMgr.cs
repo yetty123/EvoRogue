@@ -27,6 +27,10 @@ public class GameMgr : MonoBehaviour {
     StartCoroutine (MoveEnemies ());
 	}
 
+  /// <summary>
+  /// Clears the current level, updates the data,
+  /// and generates a new level
+  /// </summary>
   public void ResetLevel()
   {
     Destroy (GameObject.Find("MapHolder"));
@@ -40,17 +44,29 @@ public class GameMgr : MonoBehaviour {
     MapGenerator.Instance.GenerateLevel ();
   }
 
+  /// <summary>
+  /// Add the given Enemy to the list
+  /// </summary>
+  /// <param name="enemy">The Enemy being added</param>
   public void AddEnemy(Enemy enemy)
   {
     enemies.Add (enemy);
   }
 
+  /// <summary>
+  /// Kill the given Enemy and remove it
+  /// from the list of enemies
+  /// </summary>
+  /// <param name="enemy">The Enemy to kill</param>
   public void KillEnemy(Enemy enemy)
   {
     Debug.Log ("Enemy killed");
     enemies.Remove (enemy);
   }
 
+  /// <summary>
+  /// Moves all the enemies in the level
+  /// </summary>
   IEnumerator MoveEnemies()
   {
     enemiesMoving = true;

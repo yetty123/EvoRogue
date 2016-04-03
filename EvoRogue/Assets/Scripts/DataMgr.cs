@@ -68,6 +68,13 @@ public class DataMgr : MonoBehaviour {
     averageRoomsEntered = 0;
   }
 
+  /// <summary>
+  /// Adds the current level to the list
+  /// of levels that have been played, resets
+  /// the states of the 'currentLevel' variable
+  /// and calculates the stats based on the level
+  /// that was just completed
+  /// </summary>
   public void PrepareForNextLevel ()
   {
     levels.Add (currentLevel);
@@ -75,6 +82,9 @@ public class DataMgr : MonoBehaviour {
     CalculateStats ();
   }
 
+  /// <summary>
+  /// Calculates the total and average stats.
+  /// </summary>
   public void CalculateStats ()
   {
     levelsPlayed += 1;
@@ -82,6 +92,9 @@ public class DataMgr : MonoBehaviour {
     CalculateAverages ();
   }
 
+  /// <summary>
+  /// Calculates the totals.
+  /// </summary>
   void CalculateTotals ()
   {
     LevelData ld = levels[levels.Count - 1];
@@ -95,9 +108,11 @@ public class DataMgr : MonoBehaviour {
     totalAvgRoomWidth += ld.averageRoomWidth;
     totalAvgRoomHeight += ld.averageRoomHeight;
     totalRoomsEntered += ld.roomsEntered;
-    //Debug.Log (totalMoves + " " + totalAttacks + " " + totalNumRooms);
   }
 
+  /// <summary>
+  /// Calculates the averages.
+  /// </summary>
   void CalculateAverages ()
   {
     averageMoves = totalMoves / levelsPlayed;

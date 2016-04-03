@@ -14,6 +14,10 @@ public class Player : MonoBehaviour
     Instance = this;
   }
 
+  /// <summary>
+  /// Defend the specified attack from an Enemy.
+  /// </summary>
+  /// <param name="attack">The attack power from the Enemy</param>
   public void Defend(int attack)
   {
     int damage = Mathf.Max(attack - defense, 0);

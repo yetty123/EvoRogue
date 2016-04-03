@@ -44,6 +44,10 @@ public class Room
     this.right      = this.x + this.roomWidth;
   } 
 
+  /// <summary>
+  /// Get a random Point within this Room
+  /// </summary>
+  /// <returns>The random point in this Room</returns>
   public Point GetRandomPoint()
   {
     Point result = new Point ();
@@ -52,6 +56,10 @@ public class Room
     return result;
   }
 
+  /// <summary>
+  /// Checks if this Room overlaps with the given Room
+  /// </summary>
+  /// <param name="other">The other Room to check</param>
   public bool Overlap(Room other)
   {
     bool xOverlap = ((this.right >= other.left) && (this.left <= other.right));

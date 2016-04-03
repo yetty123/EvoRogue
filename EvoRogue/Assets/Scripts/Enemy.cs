@@ -21,6 +21,9 @@ public class Enemy : MonoBehaviour {
     GameMgr.Instance.AddEnemy (this);
 	}
 
+  /// <summary>
+  /// Try to make a move
+  /// </summary>
   public void TryMove() {
 
     int xMove = 0;
@@ -65,11 +68,18 @@ public class Enemy : MonoBehaviour {
     }
   }
 
+  /// <summary>
+  /// Attack the Player
+  /// </summary>
   void Attack()
   {
     Player.Instance.Defend (attackPower);
   }
 
+  /// <summary>
+  /// Defend the specified attack.
+  /// </summary>
+  /// <param name="attack">The attack power from the Player</param>
   public void Defend(int attack)
   {
     int damage = Mathf.Max (attack - defense, 0);
@@ -83,6 +93,11 @@ public class Enemy : MonoBehaviour {
     }
   }
 
+  /// <summary>
+  /// Move the specified x and y.
+  /// </summary>
+  /// <param name="x">The distance to move in the X-Direction</param>
+  /// <param name="y">The distance to move in the Y-Direction</param>
   IEnumerator Move(int x, int y)
   {
     // Where the player is moving

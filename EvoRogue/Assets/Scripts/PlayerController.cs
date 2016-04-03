@@ -8,14 +8,12 @@ public class PlayerController : MonoBehaviour
   public float moveSpeed;
   public bool moving;
 
-  // Use this for initialization
   void Start ()
   {
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
     moving = false;
   }
 	
-  // Update is called once per frame
   void Update ()
   {
 
@@ -58,6 +56,10 @@ public class PlayerController : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// Attack the specified enemy.
+  /// </summary>
+  /// <param name="enemy">The Enemy to attack</param>
   void Attack(GameObject enemy)
   {
     Debug.Log ("Player attacks Enemy");
@@ -65,6 +67,11 @@ public class PlayerController : MonoBehaviour
     enemy.GetComponent<Enemy> ().Defend (Player.Instance.attackPower);
   }
 
+  /// <summary>
+  /// Move the specified x and y distances.
+  /// </summary>
+  /// <param name="x">The distance to move in the X-Direction</param>
+  /// <param name="y">The distance to move in the Y-Direction</param>
   IEnumerator Move(int x, int y)
   {
     // Where the player is moving

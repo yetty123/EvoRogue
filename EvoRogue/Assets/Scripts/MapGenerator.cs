@@ -18,6 +18,8 @@ public class MapGenerator : MonoBehaviour
   public Point numRooms = new Point (5, 15);
   public Point roomWidth = new Point (3, 8);
   public Point roomHeight = new Point (3, 8);
+
+
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
   public GameObject exit;
@@ -25,7 +27,7 @@ public class MapGenerator : MonoBehaviour
 
   private Tile[][] map;
   private List<Room> rooms;
-  private GameObject mapHolder;
+  private GameObject levelMap;
 
   void Start()
   {
@@ -37,9 +39,12 @@ public class MapGenerator : MonoBehaviour
     Instance = this;
   }
 
+  /// <summary>
+  /// Generates the level.
+  /// </summary>
   public void GenerateLevel()
   {
-    mapHolder = new GameObject ("MapHolder");
+    levelMap = new GameObject ("LevelMap");
     rooms = new List<Room> ();
     SetupMapArray ();
     GenerateRooms (Random.Range (numRooms.x, numRooms.y));
@@ -54,6 +59,10 @@ public class MapGenerator : MonoBehaviour
     InformDataManager ();
   }
 
+  /// <summary>
+  /// Updates the Data Manager with the
+  /// tracked values of the level
+  /// </summary>
   void InformDataManager()
   {
     DataMgr.Instance.currentLevel.numRooms += rooms.Count;
@@ -69,6 +78,9 @@ public class MapGenerator : MonoBehaviour
     DataMgr.Instance.currentLevel.numEnemies += numEnemies;
   }
 
+  /// <summary>
+  /// Generates the enemies.
+  /// </summary>
   void GenerateEnemies()
   {
     for (int i = 0; i < numEnemies; i++)
@@ -79,8 +91,10 @@ public class MapGenerator : MonoBehaviour
       Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
     }
   }
-
-  // Create the array which holds the map data
+    
+  /// <summary>
+  /// Creates the array which holds the map data
+  /// </summary>
   void SetupMapArray()
   {
     map = new Tile[mapWidth][];
@@ -90,6 +104,11 @@ public class MapGenerator : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// Checks if the given Room fits in the level
+  /// </summary>
+  /// <returns><c>true</c>, if the Room fits, <c>false</c> otherwise.</returns>
+  /// <param name="room">The Room being checked</param>
   bool RoomFits(Room room)
   {
     bool xFit = (room.Left > 0) && (room.Right < mapWidth);
@@ -97,6 +116,12 @@ public class MapGenerator : MonoBehaviour
     return xFit && yFit;
   }
 
+  /// <summary>
+  /// Checks to make sure the given Room doesn't overlap
+  /// with any other existing Room within the level
+  /// </summary>
+  /// <returns><c>true</c>, if no Rooms overlap with the given one <c>false</c> otherwise.</returns>
+  /// <param name="room">The Room being checked</param>
   bool NoRoomsOverlap(Room room)
   {
     foreach (Room r in rooms)
@@ -109,6 +134,13 @@ public class MapGenerator : MonoBehaviour
     return true;
   }
 
+  /// <summary>
+  /// Makes the path between two 
+  /// Points in the X-Direction
+  /// </summary>
+  /// <returns>The Point where the path ends</returns>
+  /// <param name="leftPt">The left Point of the given Points</param>
+  /// <param name="rightPt">The right Point of the given Points</param>
   Point MakeXPath(Point leftPt, Point rightPt)
   {
     Point endPoint = leftPt;
@@ -120,6 +152,12 @@ public class MapGenerator : MonoBehaviour
     return endPoint;
   }
 
+  /// <summary>
+  /// Makes the path between two
+  /// Points in the Y-Direction
+  /// </summary>
+  /// <param name="topPt">The top Point of the given Points</param>
+  /// <param name="bottomPt">The bottom Point of the given Points</param>
   void MakeYPath(Point topPt, Point bottomPt)
   {
     for (int y = topPt.y; y <= bottomPt.y; y++)
@@ -128,6 +166,11 @@ public class MapGenerator : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// Links the given Rooms together
+  /// </summary>
+  /// <param name="rOne">The first Room</param>
+  /// <param name="rTwo">The second Room</param>
   void LinkRooms(Room rOne, Room rTwo)
   {
     Point source = rOne.GetRandomPoint ();
@@ -156,6 +199,13 @@ public class MapGenerator : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// Add the given Room to the level
+  /// provided it fits and doesn't overlap
+  /// with other Rooms in the level
+  /// </summary>
+  /// <returns><c>true</c>, if the Room was added, <c>false</c> otherwise.</returns>
+  /// <param name="room">The Room to be added</param>
   bool AddRoom(Room room)
   {
     if (RoomFits (room) && NoRoomsOverlap (room))
@@ -173,6 +223,12 @@ public class MapGenerator : MonoBehaviour
     return false;
   }
 
+  /// <summary>
+  /// Places a number of Rooms up to the
+  /// given number in the level and links
+  /// them all together
+  /// </summary>
+  /// <param name="nRooms">The maximum number of Rooms to create</param>
   void GenerateRooms(int nRooms)
   {
     int nTries = 15;
@@ -208,6 +264,11 @@ public class MapGenerator : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// Creates the graphical tile objects
+  /// and places them in their positions
+  /// within the level
+  /// </summary>
   void InstantiateTiles()
   {
     for (int y = 0; y < mapHeight; y++)
@@ -221,7 +282,7 @@ public class MapGenerator : MonoBehaviour
         }
 
         GameObject tileInstance = Instantiate (tile, new Vector2 (x, y), Quaternion.identity) as GameObject;
-        tileInstance.transform.SetParent (mapHolder.transform);
+        tileInstance.transform.SetParent (levelMap.transform);
     }
   }
 }
