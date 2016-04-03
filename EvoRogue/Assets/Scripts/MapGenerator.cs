@@ -51,6 +51,22 @@ public class MapGenerator : MonoBehaviour
     float exitX = rooms[1].X + rooms[1].Width / 2;
     float exitY = rooms[1].Y + rooms[1].Height / 2;
     Instantiate (exit, new Vector3 (exitX, exitY, -1.0f), Quaternion.identity);
+    InformDataManager ();
+  }
+
+  void InformDataManager()
+  {
+    DataMgr.Instance.currentLevel.numRooms += rooms.Count;
+    float totalWidth = 0.0f;
+    float totalHeight = 0.0f;
+    foreach (Room r in rooms)
+    {
+      totalWidth += r.Width;
+      totalHeight += r.Height;
+    }
+    DataMgr.Instance.currentLevel.averageRoomWidth += (totalWidth / rooms.Count);
+    DataMgr.Instance.currentLevel.averageRoomHeight += (totalHeight / rooms.Count);
+    DataMgr.Instance.currentLevel.numEnemies += numEnemies;
   }
 
   void GenerateEnemies()

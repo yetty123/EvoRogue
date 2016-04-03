@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
       {
         StartCoroutine (Move (xMove, yMove));
         moving = true;
+        DataMgr.Instance.currentLevel.numMoves += 1;
       }
       else if (checkValid.collider.gameObject.tag == "Enemy")
       {
@@ -60,6 +61,7 @@ public class PlayerController : MonoBehaviour
   void Attack(GameObject enemy)
   {
     Debug.Log ("Player attacks Enemy");
+    DataMgr.Instance.currentLevel.numAttacks += 1;
     enemy.GetComponent<Enemy> ().Defend (Player.Instance.attackPower);
   }
 

@@ -36,6 +36,7 @@ public class GameMgr : MonoBehaviour {
       Destroy (enemies[i].gameObject);
     }
     enemies.Clear ();
+    DataMgr.Instance.PrepareForNextLevel ();
     MapGenerator.Instance.GenerateLevel ();
   }
 

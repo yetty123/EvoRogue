@@ -73,9 +73,11 @@ public class Enemy : MonoBehaviour {
   public void Defend(int attack)
   {
     int damage = Mathf.Max (attack - defense, 0);
+    DataMgr.Instance.currentLevel.damageGiven += damage;
     health -= damage;
     if (health < 0)
     {
+      DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
     }
