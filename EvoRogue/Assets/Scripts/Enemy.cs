@@ -10,7 +10,8 @@ public class Enemy : MonoBehaviour {
   public int health;
   public int attackPower;
   public int defense;
-
+  public int damageDone;
+  public int turnsInCombat;
 	// Use this for initialization
 	void Start () {
     int spriteChoice = Random.Range (0, enemySprites.Count);
