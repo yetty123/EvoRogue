@@ -11,25 +11,27 @@ public class EvolutionMgr : MonoBehaviour
     // initialization
     void Start()
     {
-
+        this.population = GameMgr.Instance.enemies;
+        this.data = DataMgr.Instance;
     }
 
     // fitness function - which current enemies did the best?
     // fitness is how it is for stats, combined with how it did in combat
     int fitness(Enemy enemy)
     {
+        // ADD IN SOMETHING ABOUT BEING ALIVE IF TURNS IN COMBAT IS MORE THAN 0
         int statNormalization = enemy.attackPower + enemy.defense + enemy.health;
         return enemy.damageDone + enemy.turnsInCombat + statNormalization;
     }
 
     // generate the next level's enemies
-    List<Enemy> evolve()
-    {
-        List<Enemy> newEnemies;
+    //List<Enemy> evolve()
+    //{
+      //  List<Enemy> newEnemies;
         
 
-        return newEnemies;
-    }
+        //return newEnemies;
+    //}
 
     // slightly mutate a single enemy
     Enemy mutate(Enemy enemy)

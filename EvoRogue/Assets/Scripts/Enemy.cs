@@ -7,11 +7,7 @@ public class Enemy : MonoBehaviour {
   public LayerMask obstacleLayer;
   public List<Sprite> enemySprites;
   public float moveSpeed;
-  public int health;
-  public int attackPower;
-  public int defense;
-  public int damageDone;
-  public int turnsInCombat;
+  public EnemyData stats;
 	// Use this for initialization
 	void Start () {
     int spriteChoice = Random.Range (0, enemySprites.Count);
@@ -111,4 +107,19 @@ public class Enemy : MonoBehaviour {
       yield return null;
     }
   }
+}
+
+
+public class EnemyData
+{
+    int attackPower;
+    int defense;
+    int health;
+    int damageDone;
+    int combatTurns;
+    int energy;
+    float accuracy; // float to use as a multiplier
+    bool alive;
+
+    // ADD CONSTRUCTORS, SETTERS, GETTERS
 }

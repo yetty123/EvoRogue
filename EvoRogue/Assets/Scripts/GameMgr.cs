@@ -8,7 +8,7 @@ public class GameMgr : MonoBehaviour {
 
   public bool playersTurn = true;
 
-  private List<Enemy> enemies;
+  public List<Enemy> enemies;
   private bool enemiesMoving;
 
 	void Awake () {
@@ -33,7 +33,7 @@ public class GameMgr : MonoBehaviour {
   /// </summary>
   public void ResetLevel()
   {
-    Destroy (GameObject.Find("MapHolder"));
+    Destroy (GameObject.Find("LevelMap"));
     Destroy (GameObject.Find ("Exit(Clone)"));
     for (int i = 0; i < enemies.Count; i++)
     {
