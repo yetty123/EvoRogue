@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour {
   public LayerMask obstacleLayer;
   public List<Sprite> enemySprites;
   public float moveSpeed;
-  public EnemyData stats;
+  public EnemyData stats = new EnemyData(1, 1, 1, 1, 1.0f);
 	
     // Use this for initialization
 	void Start () {
@@ -173,4 +173,15 @@ public class EnemyData
     public bool alive;
 
     // ADD CONSTRUCTORS, SETTERS, GETTERS
+  public EnemyData(int att, int def, int hp, int energy, float accuracy)
+  {
+    this.attackPower = att;
+    this.defense = def;
+    this.health = hp;
+    this.damageDone = 0;
+    this.combatTurns = 0;
+    this.energy = energy;
+    this.accuracy = accuracy;
+    this.alive = true;
+  }
 }
