@@ -7,11 +7,9 @@ public class Enemy : MonoBehaviour {
   public LayerMask obstacleLayer;
   public List<Sprite> enemySprites;
   public float moveSpeed;
-  public int health;
-  public int attackPower;
-  public int defense;
-
-	// Use this for initialization
+  public EnemyData stats;
+	
+    // Use this for initialization
 	void Start () {
     int spriteChoice = Random.Range (0, enemySprites.Count);
     GetComponent<SpriteRenderer> ().sprite = enemySprites[spriteChoice];
@@ -73,7 +71,7 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   void Attack()
   {
-    Player.Instance.Defend (attackPower);
+    Player.Instance.Defend (stats.attackPower);
   }
 
   /// <summary>
@@ -82,10 +80,10 @@ public class Enemy : MonoBehaviour {
   /// <param name="attack">The attack power from the Player</param>
   public void Defend(int attack)
   {
-    int damage = Mathf.Max (attack - defense, 0);
+    int damage = Mathf.Max (attack - stats.defense, 0);
     DataMgr.Instance.currentLevel.damageGiven += damage;
-    health -= damage;
-    if (health < 0)
+    stats.health -= damage;
+    if (stats.health <= 0)
     {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
@@ -110,4 +108,69 @@ public class Enemy : MonoBehaviour {
       yield return null;
     }
   }
+    // overly verbose getters and setters
+  public void SetAttackPower(int value)
+    {
+        stats.attackPower = value;
+    }
+
+    public void SetDefense(int value)
+    {
+        stats.defense = value;
+    }
+
+    public void SetHealth(int value)
+    {
+        stats.health = value;
+    }
+
+    public void SetEnergy(int value)
+    {
+        stats.energy = value;
+    }
+
+    public void SetAccuracy(float value)
+    {
+        stats.accuracy = value;
+    }
+
+    public int GetAttackPower()
+    {
+        return stats.attackPower;
+    }
+
+    public int GetDefense()
+    {
+        return stats.defense;
+    }
+
+    public int GetHealth()
+    {
+        return stats.health;
+    }
+
+    public int GetEnergy()
+    {
+        return stats.energy;
+    }
+
+    public float GetAccuracy()
+    {
+        return stats.accuracy;
+    }
+}
+
+
+public class EnemyData
+{
+    public int attackPower;
+    public int defense;
+    public int health;
+    public int damageDone;
+    public int combatTurns;
+    public int energy;
+    public float accuracy; // float to use as a multiplier
+    public bool alive;
+
+    // ADD CONSTRUCTORS, SETTERS, GETTERS
 }

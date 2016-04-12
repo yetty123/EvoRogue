@@ -21,7 +21,7 @@ public class DataMgr : MonoBehaviour {
   float totalAvgRoomWidth;
   float totalAvgRoomHeight;
   int totalRoomsEntered;
-
+  
   // Averages
   public float averageMoves;
   public float averageAttacks;
@@ -140,3 +140,4 @@ public struct LevelData
   public int numAttacks, damageGiven, damageTaken;
   public int numEnemies, enemiesKilled;
 }
+
