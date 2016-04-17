@@ -39,5 +39,6 @@ public class PlayerMgr : MonoBehaviour
     DataMgr.Instance.currentLevel.damageTaken += damage;
     health -= damage;
     Debug.Log ("Enemy attacks Player for: " + damage + " damage!");
+    HUDMgr.Instance.PrintAction ("Enemy attacks Player for: " + damage + " damage!");
   }
 }

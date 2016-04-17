@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class HUDMgr : MonoBehaviour {
@@ -19,15 +20,39 @@ public class HUDMgr : MonoBehaviour {
   public Text scoreText;
   public Text logText;
 
+  private List<string> logList;
+
 	// Use this for initialization
 	void Awake () 
   {
     Instance = this;
+    logList = new List<string> ();
+    logList.Add (">");
+    logText.text = ">";
 	}
 
   public void PrintAction(string newContent)
   {
-    logText.text = newContent;
+    logList.Insert (0, newContent);
+    UpdateLog ();
+  }
+
+  void UpdateLog()
+  {
+    string message = "";
+    int toDisplay = (logList.Count > 2) ? 2 : logList.Count - 1;
+    for (int i = toDisplay; i >= 0; i--)
+    {
+      if (!logList[i].Equals (">") && logList.Count > 1)
+      {
+        if (i == 0)
+        {
+          message += "> ";
+        }
+        message += logList[i] + "\n";
+      }
+    }
+    logText.text = message;
   }
 	
 	// Update is called once per frame
@@ -38,5 +63,6 @@ public class HUDMgr : MonoBehaviour {
     defenseText.text = DEF + PlayerMgr.Instance.GetDefense().ToString();
     floorText.text = FLOOR + "1";
     scoreText.text = SCORE + "0";
+    UpdateLog ();
 	}
 }
