@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Player : MonoBehaviour 
+public class PlayerMgr : MonoBehaviour 
 {
-  public static Player Instance;
+  public static PlayerMgr Instance;
 
   public int health;
   public int attackPower;
@@ -12,6 +12,21 @@ public class Player : MonoBehaviour
   void Awake()
   {
     Instance = this;
+  }
+
+  public int GetHealth()
+  {
+    return health;
+  }
+
+  public int GetAttack()
+  {
+    return attackPower;
+  }
+
+  public int GetDefense()
+  {
+    return defense;
   }
 
   /// <summary>

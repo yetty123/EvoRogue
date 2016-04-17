@@ -29,11 +29,6 @@ public class MapGenerator : MonoBehaviour
   private List<Room> rooms;
   private GameObject levelMap;
 
-  void Start()
-  {
-    GenerateLevel ();
-  }
-
   void Awake()
   {
     Instance = this;

@@ -14,6 +14,7 @@ public class GameMgr : MonoBehaviour {
 	void Awake () {
     enemies = new List<Enemy> ();
     Instance = this;
+    ResetLevel ();
 	}
 	
 	// Update is called once per frame
@@ -61,6 +62,7 @@ public class GameMgr : MonoBehaviour {
   public void KillEnemy(Enemy enemy)
   {
     Debug.Log ("Enemy killed");
+    HUDMgr.Instance.PrintAction ("Enemy killed");
     enemies.Remove (enemy);
   }
 

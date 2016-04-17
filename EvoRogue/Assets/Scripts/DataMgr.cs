@@ -36,7 +36,7 @@ public class DataMgr : MonoBehaviour {
 
   List<LevelData> levels;
 
-  void Start () 
+  void Awake () 
   {
     Instance = this;
     levels = new List<LevelData> ();

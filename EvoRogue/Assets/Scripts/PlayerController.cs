@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
   {
     Debug.Log ("Player attacks Enemy");
     DataMgr.Instance.currentLevel.numAttacks += 1;
-    enemy.GetComponent<Enemy> ().Defend (Player.Instance.attackPower);
+    enemy.GetComponent<Enemy> ().Defend (PlayerMgr.Instance.attackPower);
   }
 
   /// <summary>

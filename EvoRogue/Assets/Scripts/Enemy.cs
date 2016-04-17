@@ -71,7 +71,7 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   void Attack()
   {
-    Player.Instance.Defend (stats.attackPower);
+    PlayerMgr.Instance.Defend (stats.attackPower);
   }
 
   /// <summary>
