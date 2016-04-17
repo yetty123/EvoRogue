@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 public class EvolutionMgr : MonoBehaviour
 {
+    public static EvolutionMgr Instance;
     public List<Enemy> population;
     public DataMgr data;
     private List<Enemy> parents;
@@ -11,8 +11,9 @@ public class EvolutionMgr : MonoBehaviour
     // initialization
     void Start()
     {
-        this.population = GameMgr.Instance.enemies;
+    this.population = GameMgr.Instance.previousGen;
         this.data = DataMgr.Instance;
+        Instance = this;
     }
 
     // fitness function - which current enemies did the best?
@@ -26,10 +27,11 @@ public class EvolutionMgr : MonoBehaviour
     }
 
     // generate the next level's enemies
-    List<Enemy> evolve()
+  public List<EnemyData> Evolve()
     {
         // calculate fitness values
         List<int> fitnessVals = new List<int>();
+        Debug.Log (population.Count);
         for(int i = 0; i < population.Count; i++ )
         {
             fitnessVals.Add(fitness(i));
@@ -52,23 +54,24 @@ public class EvolutionMgr : MonoBehaviour
             }
         }
 
-        List<Enemy> nextGen = new List<Enemy>();
+        List<EnemyData> nextGen = new List<EnemyData>();
         UnityEngine.Random rand = new UnityEngine.Random();
         Enemy mom;
         Enemy dad;
         int mutationChance = 0;
-        // for now, constant 10 enemies per level
-        for (int i = 0; i < 10; i++)
+        // for now, constant 5 enemies per level
+        for (int i = 0; i < 5; i++)
         {
+            Debug.Log (population.Count);
             // create a child based on two high fitness enemies
-            mom = population.ElementAt(UnityEngine.Random.Range(0, population.Count + 1));
-            dad = population.ElementAt(UnityEngine.Random.Range(0, population.Count + 1));
-            Enemy child = new Enemy();
-            child.SetAttackPower(mom.GetAttackPower());
-            child.SetHealth(dad.GetHealth());
-            child.SetDefense(mom.GetDefense());
-            child.SetEnergy(dad.GetEnergy());
-            child.SetAccuracy(mom.GetAccuracy());
+            mom = population[Random.Range(0, population.Count)];
+            dad = population[Random.Range(0, population.Count)];
+            EnemyData child = new EnemyData();
+            child.SetAttackPower(mom.GetAttackPower() + 1);
+            child.SetHealth(dad.GetHealth() + 1);
+            child.SetDefense(mom.GetDefense() + 1);
+            child.SetEnergy(dad.GetEnergy() + 1);
+            child.SetAccuracy(mom.GetAccuracy() + 1);
 
             // small chance to mutate the child
             mutationChance = UnityEngine.Random.Range(0, 101);
@@ -84,22 +87,22 @@ public class EvolutionMgr : MonoBehaviour
     }
 
     // slightly mutate a single enemy
-    Enemy mutate(Enemy enemy)
+    EnemyData mutate(EnemyData enemy)
     {
         int choice = UnityEngine.Random.Range(0, 4);
         switch (choice)
         {
             case 0:
-                enemy.stats.energy += 1;
+                enemy.SetEnergy(enemy.energy + 1);
                 break;
             case 1:
-                enemy.stats.health += 1;
+                enemy.SetHealth(enemy.health + 1);
                 break;
             case 2:
-                enemy.stats.attackPower += 1;
+                enemy.SetAttackPower(enemy.attackPower + 1);
                 break;
             case 3:
-                enemy.stats.defense += 1;
+                enemy.SetDefense(enemy.defense + 1);
                 break;
             default:
                 Debug.Log("Switch error");

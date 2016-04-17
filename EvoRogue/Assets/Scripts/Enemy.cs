@@ -16,7 +16,6 @@ public class Enemy : MonoBehaviour {
 
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Player");
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
-    GameMgr.Instance.AddEnemy (this);
 	}
 
   /// <summary>
@@ -162,7 +161,7 @@ public class Enemy : MonoBehaviour {
     }
 }
 
-
+[System.Serializable]
 public class EnemyData
 {
     public int attackPower;
@@ -175,6 +174,18 @@ public class EnemyData
     public bool alive;
 
     // ADD CONSTRUCTORS, SETTERS, GETTERS
+  public EnemyData()
+  {
+    this.attackPower = 1;
+    this.defense = 1;
+    this.health = 1;
+    this.damageDone = 0;
+    this.combatTurns = 0;
+    this.energy = 1;
+    this.accuracy = 1;
+    this.alive = true;
+  }
+
   public EnemyData(int att, int def, int hp, int energy, float accuracy)
   {
     this.attackPower = att;
@@ -185,5 +196,30 @@ public class EnemyData
     this.energy = energy;
     this.accuracy = accuracy;
     this.alive = true;
+  }
+
+  public void SetAttackPower(int val)
+  {
+    attackPower = val;
+  }
+
+  public void SetDefense(int val)
+  {
+    defense = val;
+  }
+
+  public void SetHealth(int val)
+  {
+    health = val;
+  }
+
+  public void SetEnergy(int val)
+  {
+    energy = val;
+  }
+
+  public void SetAccuracy(float val)
+  {
+    accuracy = val;
   }
 }

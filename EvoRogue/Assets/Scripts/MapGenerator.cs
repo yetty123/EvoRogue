@@ -78,12 +78,28 @@ public class MapGenerator : MonoBehaviour
   /// </summary>
   void GenerateEnemies()
   {
+    List<GameObject> tempEnemy = new List<GameObject> ();
+    List<EnemyData> nextGen = new List<EnemyData>();
+    if (EvolutionMgr.Instance != null)
+    {
+      nextGen = EvolutionMgr.Instance.Evolve ();
+    }
     for (int i = 0; i < numEnemies; i++)
     {
+      if (nextGen.Count > 0 && nextGen.Count > i)
+      {
+        enemy.GetComponent<Enemy> ().stats = nextGen[i];
+      }
       int roomNum = Random.Range (0, rooms.Count);
       Point randPos = rooms[roomNum].GetRandomPoint ();
       Debug.Log (randPos.x + " " + randPos.y);
-      Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
+      var newEnemy = (GameObject)Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
+      tempEnemy.Add (newEnemy);
+    }
+    GameMgr.Instance.ClearPreviousGen ();
+    foreach (GameObject e in tempEnemy)
+    {
+      GameMgr.Instance.AddEnemy (e.GetComponent<Enemy> ());
     }
   }
     
