@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour {
     Vector3 end = start + new Vector3 (movement.x, movement.y);
 
     // Check if we can move to the next tile
-    RaycastHit2D checkValid = Physics2D.Linecast (start, end, obstacleLayer);
+    RaycastHit2D checkValid = Physics2D.Linecast (end, end, obstacleLayer);
 
     // Collider will be null if the linecast didn't hit an obstacle
     if (checkValid.collider == null || checkValid.collider.transform == this.transform.GetChild(0))
@@ -64,7 +64,7 @@ public class Enemy : MonoBehaviour {
 
   List<Node> SearchableNodes(Point coordinate)
   {
-    List<Point> ReachableNodes = new List<Point>();
+    List<Node> ReachableNodes = new List<Node>();
 
     Vector3 start = new Vector3 (coordinate.x, coordinate.y);
 
@@ -76,6 +76,7 @@ public class Enemy : MonoBehaviour {
       start + new Vector3 (0, -1.0f)
     };
 
+    /*
     for (int i = 0; i < 4; i++)
     {
       // Check if we can move to the next tile
@@ -93,7 +94,7 @@ public class Enemy : MonoBehaviour {
         return ReachableNodes;
       }
     }
-
+*/
     return ReachableNodes;
   }
 
@@ -110,14 +111,14 @@ public class Enemy : MonoBehaviour {
     //Assign the player and enemy coordinates based on their positions in the game
     Point playerCoordinate = new Point ((int)playerLocation.x, (int)playerLocation.y);
     Point enemyCoordinate = new Point ((int)enemyLocation.x, (int)enemyLocation.y);
-    Node currentNode = new Node (enemyCoordinate, enemyCoordinate.TravelCost (playerCoordinate), 0, this);
+    //Node currentNode = new Node (enemyCoordinate, enemyCoordinate.TravelCost (playerCoordinate), 0);
 
     //create an open and closed list as required for A*
-    List<Node> OpenList = SearchableNodes (currentNode);
-    List<Node> ClosedList = new List<Node>(){currentNode};
+    //List<Node> OpenList = SearchableNodes (currentNode);
+    //List<Node> ClosedList = new List<Node>(){currentNode};
 
 
-
+    /*
     while(OpenList.Count > 0)
     {
       //succesfully found the destination node
@@ -137,7 +138,7 @@ public class Enemy : MonoBehaviour {
 
 
     }
-
+*/
     return new Point();
   }
 
@@ -159,7 +160,6 @@ public class Enemy : MonoBehaviour {
       case 4:
         return new Point(-1,0);
     }
-
     return new Point(0,0);
   }
 

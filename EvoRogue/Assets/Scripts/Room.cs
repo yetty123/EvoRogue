@@ -1,12 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-public struct Point
+public class Point
 {
   public Point()
   {
-    this.x = null;
-    this.y = null;
+    this.x = -1;
+    this.y = -1;
   }
 
   public Point(int x, int y)
