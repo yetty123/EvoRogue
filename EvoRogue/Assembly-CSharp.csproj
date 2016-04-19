@@ -53,11 +53,7 @@
      <Compile Include="Assets\Scripts\HUDMgr.cs" />
      <Compile Include="Assets\Scripts\LevelExit.cs" />
      <Compile Include="Assets\Scripts\MapGenerator.cs" />
-<<<<<<< HEAD
      <Compile Include="Assets\Scripts\PerceptionField.cs" />
-     <Compile Include="Assets\Scripts\Player.cs" />
-=======
->>>>>>> EvolutionBalancing
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\PlayerMgr.cs" />
      <Compile Include="Assets\Scripts\Room.cs" />

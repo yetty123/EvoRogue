@@ -11,6 +11,7 @@ public class PlayerMgr : MonoBehaviour
   private const int EXP_FOUR = 1000;
 
   public int health;
+  public int maxHealth;
   public int attackPower;
   public int defense;
   public int experience;
@@ -27,6 +28,11 @@ public class PlayerMgr : MonoBehaviour
     return health;
   }
 
+  public int GetMaxHealth()
+  {
+    return maxHealth;
+  }
+
   public int GetAttack()
   {
     return attackPower;
@@ -40,6 +46,16 @@ public class PlayerMgr : MonoBehaviour
   public int GetXP()
   {
     return experience;
+  }
+
+  public int GetMaxXP()
+  {
+    return maxExperience;
+  }
+
+  public int GetLevel()
+  {
+    return level;
   }
 
   /// <summary>
@@ -97,6 +113,7 @@ public class PlayerMgr : MonoBehaviour
   public void LevelUp()
   {
     health += 1;
+    maxHealth += 1;
     attackPower += 1;
     defense += 1;
     level += 1;

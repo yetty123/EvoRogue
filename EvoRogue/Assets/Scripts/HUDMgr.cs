@@ -62,12 +62,12 @@ public class HUDMgr : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
   {
-    healthText.text = HEALTH + PlayerMgr.Instance.GetHealth().ToString();
+    healthText.text = HEALTH + PlayerMgr.Instance.GetHealth().ToString() + "/" + PlayerMgr.Instance.GetMaxHealth().ToString();
     attackText.text = ATT + PlayerMgr.Instance.GetAttack().ToString();
     defenseText.text = DEF + PlayerMgr.Instance.GetDefense().ToString();
-    levelText.text = LVL + PlayerMgr.Instance.level.ToString();
-    expText.text = EXP + PlayerMgr.Instance.experience.ToString () + "/" + PlayerMgr.Instance.maxExperience.ToString();
-    floorText.text = FLOOR + DataMgr.Instance.levelsPlayed.ToString ();;
+    levelText.text = LVL + PlayerMgr.Instance.GetLevel().ToString();
+    expText.text = EXP + PlayerMgr.Instance.GetXP().ToString () + "/" + PlayerMgr.Instance.GetMaxXP().ToString();
+    floorText.text = FLOOR + DataMgr.Instance.levelsPlayed.ToString ();
     scoreText.text = SCORE + "0";
     UpdateLog ();
 	}

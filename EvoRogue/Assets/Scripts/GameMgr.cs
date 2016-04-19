@@ -77,14 +77,15 @@ public class GameMgr : MonoBehaviour {
   /// </summary>
   IEnumerator MoveEnemies()
   {
+    // Prevent enemies from moving for a time while Player is moving
     enemiesMoving = true;
+    yield return new WaitForSeconds (0.1f); 
     for (int i = 0; i < enemies.Count; i++)
     {
       enemies[i].TryMove ();
       // Wait to prevent enemies from occupying
-      // the same tile. We should find a better
-      // way of doing this.
-      yield return new WaitForSeconds (0.01f);;
+      // the same tile.
+      yield return new WaitForSeconds (0.01f);
     }
 
     playersTurn = true;

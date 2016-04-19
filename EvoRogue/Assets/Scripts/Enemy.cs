@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour {
     RaycastHit2D checkValid = Physics2D.Linecast (end, end, obstacleLayer);
 
     // Collider will be null if the linecast didn't hit an obstacle
-    if (checkValid.collider == null || checkValid.collider.transform == this.transform.GetChild(0))
+    if (checkValid.collider == null || checkValid.collider.GetComponent<PerceptionField>() != null)
     {
       StartCoroutine (Move (movement));
     }
