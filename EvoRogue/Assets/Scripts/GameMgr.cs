@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class GameMgr : MonoBehaviour {
 
   public static GameMgr Instance;
-
   public bool playersTurn = true;
 
   public List<Enemy> enemies;

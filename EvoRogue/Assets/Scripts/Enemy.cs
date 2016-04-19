@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour {
   /// Defend the specified attack.
   /// </summary>
   /// <param name="attack">The attack power from the Player</param>
-  public void Defend(int attack)
+  public int Defend(int attack)
   {
     int damage = Mathf.Max (attack - stats.defense, 0);
     HUDMgr.Instance.PrintAction ("Player attacks Enemy for: " + damage + " damage!");
@@ -85,11 +85,13 @@ public class Enemy : MonoBehaviour {
     stats.health -= damage;
     if (stats.health <= 0)
     {
-      HUDMgr.Instance.PrintAction ("Enemy killed");
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
+      HUDMgr.Instance.PrintAction("Enemy killed for 10 xp!");
+      return 10;
     }
+    return 0;
   }
 
   /// <summary>

@@ -55,7 +55,6 @@ public class EvolutionMgr : MonoBehaviour
         }
 
         List<EnemyData> nextGen = new List<EnemyData>();
-        UnityEngine.Random rand = new UnityEngine.Random();
         Enemy mom;
         Enemy dad;
         int mutationChance = 0;
