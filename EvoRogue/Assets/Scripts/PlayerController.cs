@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour
@@ -17,27 +17,12 @@ public class PlayerController : MonoBehaviour
   void Update ()
   {
 
-    int xMove = 0;
-    int yMove = 0;
+    Point move = MoveAttempt ();
 
-    if (Input.GetKeyDown (KeyCode.LeftArrow))
-      xMove = -1;
-    else if (Input.GetKeyDown (KeyCode.RightArrow))
-      xMove = 1;
-    else if (Input.GetKeyDown (KeyCode.UpArrow))
-      yMove = 1;
-    else if (Input.GetKeyDown (KeyCode.DownArrow))
-      yMove = -1;
-
-    if (xMove != 0)
-      yMove = 0;
-    else if (yMove != 0)
-      xMove = 0;
-
-    if ((xMove != 0 || yMove != 0) && !moving && GameMgr.Instance.playersTurn)
+    if ((move.x != 0 || move.y != 0) && !moving && GameMgr.Instance.playersTurn)
     {
       Vector3 start = transform.position;
-      Vector3 end = start + new Vector3 (xMove, yMove);
+      Vector3 end = start + new Vector3 (move.x, move.y);
 
       // Check if we can move to the next tile
       RaycastHit2D checkValid = Physics2D.Linecast (start, end, obstacleLayer);
@@ -45,7 +30,7 @@ public class PlayerController : MonoBehaviour
       // Collider will be null if the linecast didn't hit an obstacle
       if (checkValid.collider == null)
       {
-        StartCoroutine (Move (xMove, yMove));
+        StartCoroutine (Move (move));
         moving = true;
         DataMgr.Instance.currentLevel.numMoves += 1;
       }
@@ -54,6 +39,24 @@ public class PlayerController : MonoBehaviour
         Attack (checkValid.collider.gameObject);
       }
     }
+  }
+
+
+  /// <summary>
+   /// return the movement value specified by player inputs
+  /// </summary>
+  Point MoveAttempt()
+  {
+    if (Input.GetKeyDown (KeyCode.LeftArrow) || Input.GetKeyDown (KeyCode.A))
+      return new Point (-1, 0);
+    else if (Input.GetKeyDown (KeyCode.RightArrow) || Input.GetKeyDown (KeyCode.D))
+      return new Point (1, 0);
+    else if (Input.GetKeyDown (KeyCode.UpArrow) || Input.GetKeyDown (KeyCode.W))
+      return new Point (0, 1);
+    else if (Input.GetKeyDown (KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.S))
+      return new Point (0, -1);
+
+    return new Point (0, 0);
   }
 
   /// <summary>
@@ -72,10 +75,10 @@ public class PlayerController : MonoBehaviour
   /// </summary>
   /// <param name="x">The distance to move in the X-Direction</param>
   /// <param name="y">The distance to move in the Y-Direction</param>
-  IEnumerator Move(int x, int y)
+  IEnumerator Move(Point direction)
   {
     // Where the player is moving
-    Vector3 end = transform.position + new Vector3 (x, y);
+    Vector3 end = transform.position + new Vector3 (direction.x, direction.y);
 
     // Move the player towards the destination
     while (Vector3.Distance(transform.position, end) > 0)
