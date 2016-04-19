@@ -1,13 +1,28 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public struct Point
 {
+  public Point()
+  {
+    this.x = null;
+    this.y = null;
+  }
+
   public Point(int x, int y)
   {
     this.x = x;
     this.y = y;
   }
+
+  public int TravelCost(Point destination)
+  {
+    if(this.x == null || this.y == null)
+      return -1;
+
+    return Mathf.Abs (this.x - destination.x) + Mathf.Abs (this.y - destination.y);
+  }
+
   public int x { get; set; }
   public int y { get; set; }
 }
