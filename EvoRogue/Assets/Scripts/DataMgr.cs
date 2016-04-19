@@ -8,7 +8,7 @@ public class DataMgr : MonoBehaviour {
 
   public LevelData currentLevel;
 
-  int levelsPlayed;
+  public int levelsPlayed;
 
   // Totals
   int totalMoves;

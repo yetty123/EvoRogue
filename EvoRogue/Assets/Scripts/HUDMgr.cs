@@ -12,12 +12,16 @@ public class HUDMgr : MonoBehaviour {
   public const string DEF = "DEF: ";
   public const string FLOOR = "FLOOR: ";
   public const string SCORE = "SCORE: ";
+  public const string EXP = "EXP: ";
+  public const string LVL = "LVL: ";
 
   public Text healthText;
   public Text attackText;
   public Text defenseText;
   public Text floorText;
   public Text scoreText;
+  public Text expText;
+  public Text levelText;
   public Text logText;
 
   private List<string> logList;
@@ -61,7 +65,9 @@ public class HUDMgr : MonoBehaviour {
     healthText.text = HEALTH + PlayerMgr.Instance.GetHealth().ToString();
     attackText.text = ATT + PlayerMgr.Instance.GetAttack().ToString();
     defenseText.text = DEF + PlayerMgr.Instance.GetDefense().ToString();
-    floorText.text = FLOOR + "1";
+    levelText.text = LVL + PlayerMgr.Instance.level.ToString();
+    expText.text = EXP + PlayerMgr.Instance.experience.ToString () + "/" + PlayerMgr.Instance.maxExperience.ToString();
+    floorText.text = FLOOR + DataMgr.Instance.levelsPlayed.ToString ();;
     scoreText.text = SCORE + "0";
     UpdateLog ();
 	}
