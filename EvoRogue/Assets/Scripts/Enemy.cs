@@ -177,8 +177,8 @@ public class Enemy : MonoBehaviour {
     int damage = Mathf.Max (attack - stats.defense, 0);
     HUDMgr.Instance.PrintAction ("Player attacks Enemy for: " + damage + " damage!");
     DataMgr.Instance.currentLevel.damageGiven += damage;
-    stats.health -= damage;
-    if (stats.health < 0)
+    stats.currentHealth -= damage;
+    if (stats.currentHealth < 0)
     {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
@@ -226,9 +226,14 @@ public class Enemy : MonoBehaviour {
     stats.defense = value;
   }
 
-  public void SetHealth(int value)
+  public void SetCurrentHealth(int value)
   {
-    stats.health = value;
+    stats.currentHealth = value;
+  }
+
+  public void SetMaxHealth(int value)
+  {
+    stats.maxHealth = value;
   }
 
   public void SetEnergy(int value)
@@ -251,9 +256,14 @@ public class Enemy : MonoBehaviour {
     return stats.defense;
   }
 
-  public int GetHealth()
+  public int GetMaxHealth()
   {
-    return stats.health;
+    return stats.maxHealth;
+  }
+
+  public int GetCurrentHealth()
+  {
+    return stats.currentHealth;
   }
 
   public int GetEnergy()
@@ -298,7 +308,8 @@ public class EnemyData
 {
     public int attackPower;
     public int defense;
-    public int health;
+    public int maxHealth;
+    public int currentHealth;
     public int damageDone;
     public int combatTurns;
     public int energy;
@@ -310,7 +321,8 @@ public class EnemyData
   {
     this.attackPower = 1;
     this.defense = 1;
-    this.health = 1;
+    this.maxHealth = 1;
+    this.currentHealth = 1;
     this.damageDone = 0;
     this.combatTurns = 0;
     this.energy = 1;
@@ -322,7 +334,8 @@ public class EnemyData
   {
     this.attackPower = att;
     this.defense = def;
-    this.health = hp;
+    this.maxHealth = hp;
+    this.currentHealth = hp;
     this.damageDone = 0;
     this.combatTurns = 0;
     this.energy = energy;
@@ -343,7 +356,8 @@ public class EnemyData
 
   public void SetHealth(int val)
   {
-    health = val;
+    currentHealth = val;
+    maxHealth = val;
   }
 
   public void SetEnergy(int val)
