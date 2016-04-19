@@ -8,9 +8,13 @@ public class EvolutionMgr : MonoBehaviour
     public DataMgr data;
     
     // initialization
-    void Start()
+    void Awake()
     {
-        this.population = GameMgr.Instance.previousGen;
+      this.population = new List<Enemy> ();
+      if (GameMgr.Instance != null) 
+      {
+         this.population = GameMgr.Instance.previousGen;
+      }
         this.data = DataMgr.Instance;
         Instance = this;
     }
