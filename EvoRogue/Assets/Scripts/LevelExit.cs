@@ -15,7 +15,13 @@ public class LevelExit : MonoBehaviour
       PlayerController pController = GameObject.Find ("Player").GetComponent<PlayerController> ();
       pController.StopAllCoroutines ();
       pController.moving = false;
-      GameMgr.Instance.ResetLevel ();
+      PlayerMgr.Instance.experience += 100;
+      HUDMgr.Instance.PrintAction("100 experience gained!");
+      if (PlayerMgr.Instance.CheckLevelUp())
+      {
+        PlayerMgr.Instance.LevelUp();
+      }
+      GameMgr.Instance.ResetLevel();
     }
   }
 }

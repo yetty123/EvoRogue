@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
   public LayerMask obstacleLayer;
   public float moveSpeed;
   public bool moving;
+  int experience;
 
   void Start ()
   {
@@ -67,7 +68,14 @@ public class PlayerController : MonoBehaviour
   {
     Debug.Log ("Player attacks Enemy");
     DataMgr.Instance.currentLevel.numAttacks += 1;
-    enemy.GetComponent<Enemy> ().Defend (Player.Instance.attackPower);
+    int xp = (enemy.GetComponent<Enemy>()).Defend(PlayerMgr.Instance.attackPower);
+    if (xp > 0) {
+      PlayerMgr.Instance.experience += xp;
+      if (PlayerMgr.Instance.CheckLevelUp())
+      {
+        PlayerMgr.Instance.LevelUp();
+      }
+    }
   }
 
   /// <summary>

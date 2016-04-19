@@ -8,7 +8,7 @@ public class DataMgr : MonoBehaviour {
 
   public LevelData currentLevel;
 
-  int levelsPlayed;
+  public int levelsPlayed;
 
   // Totals
   int totalMoves;
@@ -36,14 +36,14 @@ public class DataMgr : MonoBehaviour {
 
   List<LevelData> levels;
 
-  void Start () 
+  void Awake () 
   {
     Instance = this;
     levels = new List<LevelData> ();
     currentLevel = new LevelData ();
 
     // Initialize all totals
-    levelsPlayed = 1;
+    levelsPlayed = 0;
     totalMoves = 0;
     totalAttacks = 0;
     totalDmgGiven = 0;

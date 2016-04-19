@@ -5,15 +5,17 @@ using System.Collections.Generic;
 public class GameMgr : MonoBehaviour {
 
   public static GameMgr Instance;
-
   public bool playersTurn = true;
 
   public List<Enemy> enemies;
+  public List<Enemy> previousGen;
   private bool enemiesMoving;
 
 	void Awake () {
     enemies = new List<Enemy> ();
+    previousGen = new List<Enemy> ();
     Instance = this;
+    ResetLevel ();
 	}
 	
 	// Update is called once per frame
@@ -51,6 +53,12 @@ public class GameMgr : MonoBehaviour {
   public void AddEnemy(Enemy enemy)
   {
     enemies.Add (enemy);
+    previousGen.Add (enemy);
+  }
+
+  public void ClearPreviousGen()
+  {
+    previousGen.Clear ();
   }
 
   /// <summary>

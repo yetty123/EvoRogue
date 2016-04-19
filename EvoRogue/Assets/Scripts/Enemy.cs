@@ -23,10 +23,6 @@ public class Enemy : MonoBehaviour {
 
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Player");
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
-    GameMgr.Instance.AddEnemy (this);
-	
-	  rows = MapGenerator.Instance.mapHeight;
-    cols = MapGenerator.Instance.mapWidth;
 	}
 
   /// <summary>
@@ -104,7 +100,7 @@ public class Enemy : MonoBehaviour {
   Point MovePickerA()
   {
     //get the location of theplayer and enemy to figure out their coordinates
-    Vector3 playerLocation = Player.Instance.transform.position;
+    Vector3 playerLocation = PlayerMgr.Instance.transform.position;
     Vector3 enemyLocation = transform.position;
     //Debug.Log("player = " + playerLocation + "   enemy = " + enemyLocation);
 
@@ -169,16 +165,17 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   void Attack()
   {
-    Player.Instance.Defend (stats.attackPower);
+    PlayerMgr.Instance.Defend (stats.attackPower);
   }
 
   /// <summary>
   /// Defend the specified attack.
   /// </summary>
   /// <param name="attack">The attack power from the Player</param>
-  public void Defend(int attack)
+  public int Defend(int attack)
   {
     int damage = Mathf.Max (attack - stats.defense, 0);
+    HUDMgr.Instance.PrintAction ("Player attacks Enemy for: " + damage + " damage!");
     DataMgr.Instance.currentLevel.damageGiven += damage;
     stats.health -= damage;
     if (stats.health < 0)
@@ -186,7 +183,10 @@ public class Enemy : MonoBehaviour {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
+      HUDMgr.Instance.PrintAction("Enemy killed for 10 xp!");
+      return 10;
     }
+    return 0;
   }
 
   /// <summary>
@@ -293,6 +293,7 @@ public class Node
   }
 }
 
+[System.Serializable]
 public class EnemyData
 {
     public int attackPower;
@@ -304,8 +305,19 @@ public class EnemyData
     public int range;
     public float accuracy;
     public bool alive;
+  
+  public EnemyData()
+  {
+    this.attackPower = 1;
+    this.defense = 1;
+    this.health = 1;
+    this.damageDone = 0;
+    this.combatTurns = 0;
+    this.energy = 1;
+    this.accuracy = 1;
+    this.alive = true;
+  }
 
-    // ADD CONSTRUCTORS, SETTERS, GETTERS
   public EnemyData(int att, int def, int hp, int energy, int range, float accuracy)
   {
     this.attackPower = att;
@@ -317,5 +329,30 @@ public class EnemyData
     this.range = range;
     this.accuracy = accuracy;
     this.alive = true;
+  }
+
+  public void SetAttackPower(int val)
+  {
+    attackPower = val;
+  }
+
+  public void SetDefense(int val)
+  {
+    defense = val;
+  }
+
+  public void SetHealth(int val)
+  {
+    health = val;
+  }
+
+  public void SetEnergy(int val)
+  {
+    energy = val;
+  }
+
+  public void SetAccuracy(float val)
+  {
+    accuracy = val;
   }
 }
