@@ -80,7 +80,7 @@ public class MapGenerator : MonoBehaviour
   {
     List<GameObject> tempEnemy = new List<GameObject> ();
     List<EnemyData> nextGen = new List<EnemyData>();
-    if (EvolutionMgr.Instance != null)
+    if (EvolutionMgr.Instance != null && GameMgr.Instance.previousGen.Count != 0)
     {
       nextGen = EvolutionMgr.Instance.Evolve ();
     }
