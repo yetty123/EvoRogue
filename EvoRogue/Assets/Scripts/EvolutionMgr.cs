@@ -6,12 +6,11 @@ public class EvolutionMgr : MonoBehaviour
     public static EvolutionMgr Instance;
     public List<Enemy> population;
     public DataMgr data;
-    private List<Enemy> parents;
-
+    
     // initialization
     void Start()
     {
-    this.population = GameMgr.Instance.previousGen;
+        this.population = GameMgr.Instance.previousGen;
         this.data = DataMgr.Instance;
         Instance = this;
     }
@@ -22,7 +21,7 @@ public class EvolutionMgr : MonoBehaviour
     {
         // ADD IN SOMETHING ABOUT BEING ALIVE IF TURNS IN COMBAT IS MORE THAN 0
         Enemy enemy = population.ElementAt(index);
-        int statNormalization = enemy.stats.attackPower + enemy.stats.defense + enemy.stats.health;
+        int statNormalization = enemy.stats.attackPower + enemy.stats.defense + enemy.stats.maxHealth;
         return enemy.stats.damageDone + enemy.stats.combatTurns + statNormalization;
     }
 
@@ -46,11 +45,15 @@ public class EvolutionMgr : MonoBehaviour
         }
         average = total / fitnessVals.Count;
 
+            
+
         // remove below average performance enemies
         for (int i = 0; i < fitnessVals.Count; i++)
         {
-            if (fitnessVals.ElementAt(i) < average) {
-                population.RemoveAt(i);
+            if (population.ElementAt(i) != null) { 
+              if (fitnessVals.ElementAt(i) < average) {
+                  population.RemoveAt(i);
+              }
             }
         }
 
@@ -67,7 +70,7 @@ public class EvolutionMgr : MonoBehaviour
             dad = population[Random.Range(0, population.Count)];
             EnemyData child = new EnemyData();
             child.SetAttackPower(mom.GetAttackPower() + 1);
-            child.SetHealth(dad.GetHealth() + 1);
+            child.SetHealth(dad.GetMaxHealth() + 1);
             child.SetDefense(mom.GetDefense() + 1);
             child.SetEnergy(dad.GetEnergy() + 1);
             child.SetAccuracy(mom.GetAccuracy() + 1);
@@ -95,7 +98,7 @@ public class EvolutionMgr : MonoBehaviour
                 enemy.SetEnergy(enemy.energy + 1);
                 break;
             case 1:
-                enemy.SetHealth(enemy.health + 1);
+                enemy.SetHealth(enemy.maxHealth + 1);
                 break;
             case 2:
                 enemy.SetAttackPower(enemy.attackPower + 1);
