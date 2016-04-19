@@ -43,7 +43,7 @@ public class DataMgr : MonoBehaviour {
     currentLevel = new LevelData ();
 
     // Initialize all totals
-    levelsPlayed = 1;
+    levelsPlayed = 0;
     totalMoves = 0;
     totalAttacks = 0;
     totalDmgGiven = 0;
