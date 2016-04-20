@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+[System.Serializable]
 public class Point
 {
+  public int x;
+  public int y;
+
   public Point()
   {
     this.x = -1;
@@ -50,20 +55,22 @@ public class Point
     return Mathf.Abs (this.x - destination.x) + Mathf.Abs (this.y - destination.y);
   }
 
-  public int x { get; set; }
-  public int y { get; set; }
+  public int X { get; set; }
+  public int Y { get; set; }
 }
 
+[System.Serializable]
 public class Room
 {
-  private int x;
-  private int y;
-  private int roomWidth;
-  private int roomHeight;
-  private int top;
-  private int bottom;
-  private int left;
-  private int right;
+  public int x;
+  public int y;
+  public int roomWidth;
+  public int roomHeight;
+  public int top;
+  public int bottom;
+  public int left;
+  public int right;
+  public List<Point> doors;
 
   public int X { get { return x; } }
   public int Y { get { return y; } }
@@ -73,6 +80,7 @@ public class Room
   public int Bottom { get { return bottom; } }
   public int Left { get { return left; } }
   public int Right { get { return right; } }
+  public List<Point> Doors { get { return doors; } }
 
   public Room(int x, int y, int width, int height)
   {
@@ -81,9 +89,10 @@ public class Room
     this.roomWidth  = width;
     this.roomHeight = height;
     this.top        = this.y;
-    this.bottom     = this.y + this.roomHeight;
+    this.bottom     = this.y + this.roomHeight - 1;
     this.left       = this.x;
-    this.right      = this.x + this.roomWidth;
+    this.right      = this.x + this.roomWidth - 1;
+    this.doors = new List<Point> ();
   } 
 
   /// <summary>
@@ -98,6 +107,13 @@ public class Room
     return result;
   }
 
+  public bool ContainsPt(Point pt)
+  {
+    bool fitX = ((pt.x < this.roomWidth + this.x) && (pt.x > this.x));
+    bool fitY = ((pt.y < this.roomHeight + this.y) && (pt.y > this.y));
+    return fitX && fitY;
+  }
+
   /// <summary>
   /// Checks if this Room overlaps with the given Room
   /// </summary>
@@ -109,4 +125,20 @@ public class Room
     return xOverlap && yOverlap;
   }
 
+  public bool IsDoor(Point doorPt)
+  {
+    foreach (Point door in this.doors)
+    {
+      if (door.x == doorPt.x && door.y == doorPt.y)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void AddDoor(Point doorPt)
+  {
+    this.doors.Add (doorPt);
+  }
 }
