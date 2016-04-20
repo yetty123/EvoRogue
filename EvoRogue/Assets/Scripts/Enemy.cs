@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour {
   public float moveSpeed;
 
   public EnemyData stats = new EnemyData(1, 1, 1, 1, 2, 1.0f);
-  Point movement;
+  Point targetCoordinate;
   int rows;
   int cols;
   public bool playerSighted = false;
@@ -34,23 +34,27 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   public void TryMove() 
   {
+    //get the location of theplayer and enemy to figure out their coordinates
+    Vector3 playerLocation = Player.Instance.transform.position;
+    Vector3 enemyLocation = transform.position;
+    //Debug.Log("player = " + playerLocation + "   enemy = " + startLocation);
 
-    if (!playerSighted)    
-      movement = MovePickerRandom();
+    if (!playerSighted)
+      targetCoordinate = MovePickerRandom(enemyLocation);
     else  
-      movement = MovePickerA();
+      targetCoordinate = MovePickerA(enemyLocation, playerLocation);
 
 
-    Vector3 start = transform.position;
-    Vector3 end = start + new Vector3 (movement.x, movement.y);
+    Point endDirection = new Point(enemyLocation.x - targetCoordinate.x, enemyLocation.y - targetCoordinate.y);
+    Vector3 endCoordinate = new Vector3(targetCoordinate.x, targetCoordinate.y);
 
     // Check if we can move to the next tile
-    RaycastHit2D checkValid = Physics2D.Linecast (start, end, obstacleLayer);
+    RaycastHit2D checkValid = Physics2D.Linecast (endCoordinate, endCoordinate, obstacleLayer);
 
     // Collider will be null if the linecast didn't hit an obstacle
     if (checkValid.collider == null || checkValid.collider.transform == this.transform.GetChild(0))
     {
-      StartCoroutine (Move (movement));
+      StartCoroutine (Move (endDirection));
     }
     else if (checkValid.collider.gameObject.tag == "Player")
     {
@@ -62,77 +66,103 @@ public class Enemy : MonoBehaviour {
     }
   }
 
-  List<Node> SearchableNodes(Point coordinate)
+  List<Node> SearchableNodes(Point currentCoordinate, Point destinationCoordinate, List<Node> OpenNodes)
   {
-    List<Point> ReachableNodes = new List<Point>();
-
-    Vector3 start = new Vector3 (coordinate.x, coordinate.y);
+    List<Node> ReachableNodes = new List<Node>();
 
     //assign locations to all directions that can be taken
-    Vector3[] end = new Vector3[4] {
-      start + new Vector3 (1.0f, 0),
-      start + new Vector3 (-1.0f, 0),
-      start + new Vector3 (0, 1.0f),
-      start + new Vector3 (0, -1.0f)
+    Point[] end = new Point[4] {
+      currentCoordinate + new Point (1, 0),
+      currentCoordinate + new Point (-1, 0),
+      currentCoordinate + new Point (0, 1),
+      currentCoordinate + new Point (0, -1)
     };
 
     for (int i = 0; i < 4; i++)
     {
       // Check if we can move to the next tile
-      RaycastHit2D checkValid = Physics2D.Linecast (start, end[i], obstacleLayer);
+      Vector3 pointChecking = new Vector3(end[i].x, end[i].y);
+      RaycastHit2D checkValid = Physics2D.Linecast (pointChecking, pointChecking, obstacleLayer);
 
       // Collider will be null if the linecast didn't hit an obstacle
-      if (checkValid.collider == null || checkValid.collider.transform == this.transform.GetChild(0))
+      if (checkValid.collider == null || checkValid.collider.GetComponent<PerceptionField>() != null)
       {
-        ReachableNodes.Add (new Point ((int)end[i].x, (int)end[i].y));
+        ReachableNodes.Add (new Node(end[i], end[i].TravelCost(destinationCoordinate), 1));
       }
       else if (checkValid.collider.gameObject.tag == "Player")
       {
         ReachableNodes.Clear ();
-        ReachableNodes.Add (new Point ((int)end[i].x, (int)end[i].y));
+        ReachableNodes.Add (new Node(end[i], end[i].TravelCost(destinationCoordinate), 1));
         return ReachableNodes;
       }
     }
+    /*
+    //time to find the next node to focus on
+    for(int i = 0; i < ReachableNodes.Count; i++)
+    {
+      for(int k = 0; k < OpenNodes.Count; k++)
+      {
+        if(ReachableNodes[i].coordinate == OpenNodes[k].coordinate && ReachableNodes[i].totalCost < OpenNodes[k].totalCost)
+        {
 
+        }
+      }
+    }
+    */
     return ReachableNodes;
   }
 
   /// <summary>
   /// move A*
   /// </summary>
-  Point MovePickerA()
+  Point MovePickerA(Vector3 startLocation, Vector3 endLocation)
   {
-    //get the location of theplayer and enemy to figure out their coordinates
-    Vector3 playerLocation = Player.Instance.transform.position;
-    Vector3 enemyLocation = transform.position;
-    //Debug.Log("player = " + playerLocation + "   enemy = " + enemyLocation);
+    
 
     //Assign the player and enemy coordinates based on their positions in the game
-    Point playerCoordinate = new Point ((int)playerLocation.x, (int)playerLocation.y);
-    Point enemyCoordinate = new Point ((int)enemyLocation.x, (int)enemyLocation.y);
-    Node currentNode = new Node (enemyCoordinate, enemyCoordinate.TravelCost (playerCoordinate), 0, this);
+    Point playerCoordinate = new Point ((int)endLocation.x, (int)endLocation.y);
+    Point enemyCoordinate = new Point ((int)startLocation.x, (int)startLocation.y);
+    Node currentNode = new Node (enemyCoordinate, enemyCoordinate.TravelCost (playerCoordinate), 0);
 
     //create an open and closed list as required for A*
-    List<Node> OpenList = SearchableNodes (currentNode);
+    List<Node> OpenList = SearchableNodes (currentNode.coordinate, playerCoordinate, new List<Node>());
     List<Node> ClosedList = new List<Node>(){currentNode};
 
-
+    List<Node> AdjacentNodes = OpenList;
 
     while(OpenList.Count > 0)
     {
       //succesfully found the destination node
-      if (OpenList[0].coordinate = playerCoordinate)
+      if (OpenList[0].coordinate == playerCoordinate)
       {
         //find the first move to be made in the path found
-    
         //create a temporary node for traversal and make it the destination node
         Node traversalNode = OpenList[0];
+
+        //if the nodes parent's parent isn't itself, then keep traversing through the parents
         while (traversalNode.parent.parent != traversalNode.parent)
         {
           traversalNode = traversalNode.parent;
         }
 
+        //return the point to traverse towards
         return traversalNode.parent.coordinate;
+      }
+      else
+      {
+        //time to find the next node to focus on
+        Node nextNode = OpenList[0];
+
+        for(int i = 0; i < AdjacentNodes.Count; i++)
+        {
+          for(int k = 0; k < OpenList.Count; k++)
+          {
+            if(AdjacentNodes[i].coordinate == OpenList[k].coordinate && AdjacentNodes[i].totalCost <= OpenList[k].totalCost)
+            {
+              OpenList[k].parent = currentNode;
+            }
+          }
+        }
       }
 
 
@@ -144,23 +174,23 @@ public class Enemy : MonoBehaviour {
   /// <summary>
   /// Random move
   /// </summary>
-  Point MovePickerRandom()
+  Point MovePickerRandom(Vector3 currentLocation)
   {
     switch (Random.Range (0, 5))
     {
       case 0:
-        return new Point(0,0);
+        return new Point((int)currentLocation.x, (int)currentLocation.y);
       case 1:
-        return new Point(0,1);
+        return new Point((int)currentLocation.x, (int)currentLocation.y+1);
       case 2:
-        return new Point(0,-1);
+        return new Point((int)currentLocation.x, (int)currentLocation.y-1);
       case 3:
-        return new Point(1,0);
+        return new Point((int)currentLocation.x+1, (int)currentLocation.y);
       case 4:
-        return new Point(-1,0);
+        return new Point((int)currentLocation.x-1, (int)currentLocation.y);
     }
 
-    return new Point(0,0);
+    return new Point((int)currentLocation.x, (int)currentLocation.y); 
   }
 
 
@@ -281,6 +311,15 @@ public class Node
     movementCost = 0;
     totalCost = 0;
     parent = null;
+  }
+
+  public Node(Point Coordinate, int Heuristic, int MovementCost)
+  {
+    coordinate = Coordinate;
+    heuristic = Heuristic;
+    movementCost = MovementCost;
+    totalCost = Heuristic + MovementCost;
+    parent = this;
   }
 
   public Node(Point Coordinate, int Heuristic, int MovementCost, Node Parent)
