@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour {
   public List<Sprite> enemySprites;
   public float moveSpeed;
 
-  public EnemyData stats = new EnemyData(1, 1, 1, 1, 2, 1.0f);
+  public EnemyData stats = new EnemyData(1, 1, 1, 1, 6, 1.0f);
   Point targetCoordinate;
   int rows;
   int cols;
@@ -40,13 +40,16 @@ public class Enemy : MonoBehaviour {
     //Debug.Log("player = " + playerLocation + "   enemy = " + startLocation);
 
     if (!playerSighted)
-      targetCoordinate = MovePickerRandom(enemyLocation);
-    else  
-      targetCoordinate = MovePickerA(enemyLocation, playerLocation);
+      targetCoordinate = Pathfinding.Instance.MovePickerRandom(enemyLocation);
+    else
+      targetCoordinate = Pathfinding.Instance.MovePickerA(enemyLocation, playerLocation, obstacleLayer);
 
+    Debug.Log("Target Coordinate: " + targetCoordinate.x + " , " + targetCoordinate.y);
 
-    Point endDirection = new Point(enemyLocation.x - targetCoordinate.x, enemyLocation.y - targetCoordinate.y);
+    Point endDirection = new Point(targetCoordinate.x - enemyLocation.x, targetCoordinate.y - enemyLocation.y);
     Vector3 endCoordinate = new Vector3(targetCoordinate.x, targetCoordinate.y);
+
+    //Debug.Log(endCoordinate);
 
     // Check if we can move to the next tile
     RaycastHit2D checkValid = Physics2D.Linecast (endCoordinate, endCoordinate, obstacleLayer);
@@ -65,134 +68,6 @@ public class Enemy : MonoBehaviour {
       Debug.Log (checkValid.collider.gameObject.tag);
     }
   }
-
-  List<Node> SearchableNodes(Point currentCoordinate, Point destinationCoordinate, List<Node> OpenNodes)
-  {
-    List<Node> ReachableNodes = new List<Node>();
-
-    //assign locations to all directions that can be taken
-    Point[] end = new Point[4] {
-      currentCoordinate + new Point (1, 0),
-      currentCoordinate + new Point (-1, 0),
-      currentCoordinate + new Point (0, 1),
-      currentCoordinate + new Point (0, -1)
-    };
-
-    for (int i = 0; i < 4; i++)
-    {
-      // Check if we can move to the next tile
-      Vector3 pointChecking = new Vector3(end[i].x, end[i].y);
-      RaycastHit2D checkValid = Physics2D.Linecast (pointChecking, pointChecking, obstacleLayer);
-
-      // Collider will be null if the linecast didn't hit an obstacle
-      if (checkValid.collider == null || checkValid.collider.GetComponent<PerceptionField>() != null)
-      {
-        ReachableNodes.Add (new Node(end[i], end[i].TravelCost(destinationCoordinate), 1));
-      }
-      else if (checkValid.collider.gameObject.tag == "Player")
-      {
-        ReachableNodes.Clear ();
-        ReachableNodes.Add (new Node(end[i], end[i].TravelCost(destinationCoordinate), 1));
-        return ReachableNodes;
-      }
-    }
-    /*
-    //time to find the next node to focus on
-    for(int i = 0; i < ReachableNodes.Count; i++)
-    {
-      for(int k = 0; k < OpenNodes.Count; k++)
-      {
-        if(ReachableNodes[i].coordinate == OpenNodes[k].coordinate && ReachableNodes[i].totalCost < OpenNodes[k].totalCost)
-        {
-
-        }
-      }
-    }
-    */
-    return ReachableNodes;
-  }
-
-  /// <summary>
-  /// move A*
-  /// </summary>
-  Point MovePickerA(Vector3 startLocation, Vector3 endLocation)
-  {
-    
-
-    //Assign the player and enemy coordinates based on their positions in the game
-    Point playerCoordinate = new Point ((int)endLocation.x, (int)endLocation.y);
-    Point enemyCoordinate = new Point ((int)startLocation.x, (int)startLocation.y);
-    Node currentNode = new Node (enemyCoordinate, enemyCoordinate.TravelCost (playerCoordinate), 0);
-
-    //create an open and closed list as required for A*
-    List<Node> OpenList = SearchableNodes (currentNode.coordinate, playerCoordinate, new List<Node>());
-    List<Node> ClosedList = new List<Node>(){currentNode};
-
-    List<Node> AdjacentNodes = OpenList;
-
-    while(OpenList.Count > 0)
-    {
-      //succesfully found the destination node
-      if (OpenList[0].coordinate == playerCoordinate)
-      {
-        //find the first move to be made in the path found
-        //create a temporary node for traversal and make it the destination node
-        Node traversalNode = OpenList[0];
-
-        //if the nodes parent's parent isn't itself, then keep traversing through the parents
-        while (traversalNode.parent.parent != traversalNode.parent)
-        {
-          traversalNode = traversalNode.parent;
-        }
-
-        //return the point to traverse towards
-        return traversalNode.parent.coordinate;
-      }
-      else
-      {
-        //time to find the next node to focus on
-        Node nextNode = OpenList[0];
-
-        for(int i = 0; i < AdjacentNodes.Count; i++)
-        {
-          for(int k = 0; k < OpenList.Count; k++)
-          {
-            if(AdjacentNodes[i].coordinate == OpenList[k].coordinate && AdjacentNodes[i].totalCost <= OpenList[k].totalCost)
-            {
-              OpenList[k].parent = currentNode;
-            }
-          }
-        }
-      }
-
-
-    }
-
-    return new Point();
-  }
-
-  /// <summary>
-  /// Random move
-  /// </summary>
-  Point MovePickerRandom(Vector3 currentLocation)
-  {
-    switch (Random.Range (0, 5))
-    {
-      case 0:
-        return new Point((int)currentLocation.x, (int)currentLocation.y);
-      case 1:
-        return new Point((int)currentLocation.x, (int)currentLocation.y+1);
-      case 2:
-        return new Point((int)currentLocation.x, (int)currentLocation.y-1);
-      case 3:
-        return new Point((int)currentLocation.x+1, (int)currentLocation.y);
-      case 4:
-        return new Point((int)currentLocation.x-1, (int)currentLocation.y);
-    }
-
-    return new Point((int)currentLocation.x, (int)currentLocation.y); 
-  }
-
 
   /// <summary>
   /// Attack the Player
@@ -304,6 +179,47 @@ public class Node
   public int totalCost;
   public Node parent;
   public Point coordinate;
+  /*
+  public override bool Equals(object obj)
+  {
+    if (obj == null) return false;
+    Node objAsNode = obj as Node;
+    if (objAsNode == null) return false;
+    else return Equals(objAsNode);
+  }
+
+  public override int GetHashCode()
+  {
+    return heuristic;
+  }
+
+  public bool Equals(Node other)
+  {
+    if (other == null) return false;
+    return (
+      this.coordinate == other.coordinate &&
+      this.movementCost == other.movementCost &&
+      this.totalCost == other.totalCost &&
+      this.heuristic == other.heuristic);
+  }
+*/
+  public static bool operator !=(Node node1, Node node2) 
+  {
+    return !(
+      node1.coordinate == node2.coordinate &&
+      node1.movementCost == node2.movementCost &&
+      node1.totalCost == node2.totalCost &&
+      node1.heuristic == node2.heuristic);
+  }
+
+  public static bool operator ==(Node node1, Node node2) 
+  {
+    return (
+      node1.coordinate == node2.coordinate &&
+      node1.movementCost == node2.movementCost &&
+      node1.totalCost == node2.totalCost &&
+      node1.heuristic == node2.heuristic);
+  }
 
   public Node()
   {
@@ -311,6 +227,15 @@ public class Node
     movementCost = 0;
     totalCost = 0;
     parent = null;
+  }
+
+  public Node(Node otherNode)
+  {
+    coordinate = otherNode.coordinate;
+    heuristic = otherNode.heuristic;
+    movementCost = otherNode.movementCost;
+    totalCost = otherNode.heuristic + otherNode.movementCost;
+    parent = otherNode.parent;
   }
 
   public Node(Point Coordinate, int Heuristic, int MovementCost)
