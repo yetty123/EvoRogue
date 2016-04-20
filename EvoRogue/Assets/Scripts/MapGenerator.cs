@@ -9,7 +9,8 @@ public class MapGenerator : MonoBehaviour
   public enum Tile
   {
     Wall,
-    Ground
+    Ground,
+    Obstacle
   }
 
   public int mapWidth = 40;
@@ -22,6 +23,7 @@ public class MapGenerator : MonoBehaviour
 
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
+  public GameObject[] obstacleTiles;
   public GameObject exit;
   public GameObject enemy;
 
@@ -235,6 +237,31 @@ public class MapGenerator : MonoBehaviour
     return false;
   }
 
+  void AddObstacles(Room room)
+  {
+    float obstacleChance = Random.value;
+    if (obstacleChance <= 0.25f)
+    {
+      return;
+    }
+    else if (obstacleChance <= 0.75f)
+    {
+      for (int i = 0; i < 2; i++)
+      {
+        Point obstacleSpot = room.GetRandomPoint ();
+        map [obstacleSpot.y] [obstacleSpot.x] = Tile.Obstacle;
+      }
+    }
+    else
+    {
+      for (int i = 0; i < 3; i++)
+      {
+        Point obstacleSpot = room.GetRandomPoint ();
+        map [obstacleSpot.y] [obstacleSpot.x] = Tile.Obstacle;
+      }
+    }
+  }
+
   /// <summary>
   /// Places a number of Rooms up to the
   /// given number in the level and links
@@ -246,32 +273,34 @@ public class MapGenerator : MonoBehaviour
     int nTries = 15;
     int roomsMade = 0;
 
-    while ((roomsMade < nRooms) && nTries > 0)
+    while ((roomsMade < nRooms) && nTries > 0) 
     {
       int rWidth = Random.Range (roomWidth.x, roomWidth.y);
       int rHeight = Random.Range (roomHeight.x, roomHeight.y);
       int roomX = Random.Range (0, mapWidth - rWidth);
       int roomY = Random.Range (0, mapHeight - rHeight);
       Room newRoom = new Room (roomX, roomY, rWidth, rHeight);
-      if (AddRoom (newRoom))
+      if (AddRoom (newRoom)) 
       {
-        roomsMade += 1;
-        nTries = 15;
+         roomsMade += 1;
+         nTries = 15;
+      } 
+      else 
+      {
+         nTries -= 1;
+      }
+    }
+    
+    for (int x = 0; x < rooms.Count; x++)
+    {
+      AddObstacles (rooms[x]);
+      if (x == rooms.Count - 1)
+      {
+        LinkRooms (rooms[x], rooms[0]);
       }
       else
       {
-        nTries -= 1;
-      }
-      for (int x = 0; x < rooms.Count; x++)
-      {
-        if (x == rooms.Count - 1)
-        {
-          LinkRooms (rooms[x], rooms[0]);
-        }
-        else
-        {
-          LinkRooms (rooms[x], rooms[x + 1]);
-        }
+        LinkRooms (rooms[x], rooms[x + 1]);
       }
     }
   }
@@ -288,9 +317,16 @@ public class MapGenerator : MonoBehaviour
       for (int x = 0; x < mapWidth; x++)
       {
         GameObject tile = wallTiles[Random.Range(0, wallTiles.Length)];
-        if (map[y][x] == Tile.Ground)
+        if (map [y] [x] == Tile.Ground) 
         {
-          tile = groundTiles[0];
+          tile = groundTiles [0];
+        } 
+        else if (map [y] [x] == Tile.Obstacle) 
+        {
+          tile = groundTiles [0];
+          GameObject groundInstance = Instantiate (tile, new Vector2 (x, y), Quaternion.identity) as GameObject;
+          groundInstance.transform.SetParent (levelMap.transform);
+          tile = obstacleTiles [0];
         }
 
         GameObject tileInstance = Instantiate (tile, new Vector2 (x, y), Quaternion.identity) as GameObject;

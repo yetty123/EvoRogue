@@ -26,7 +26,9 @@ public class PlayerController : MonoBehaviour
       Vector3 end = start + new Vector3 (move.x, move.y);
 
       // Check if we can move to the next tile
-      RaycastHit2D checkValid = Physics2D.Linecast (start, end, obstacleLayer);
+      RaycastHit2D checkValid = Physics2D.Linecast(start, end, obstacleLayer);
+
+      Debug.Log (checkValid.collider);
 
       // Collider will be null if the linecast didn't hit an obstacle
       if (checkValid.collider == null)
