@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,8 +8,8 @@ public class Enemy : MonoBehaviour {
   public List<Sprite> enemySprites;
   public float moveSpeed;
 
-  public EnemyData stats = new EnemyData(1, 1, 1, 1, 2, 1.0f);
-  Point movement;
+  public EnemyData stats = new EnemyData(1, 1, 1, 1, 6, 1.0f);
+  Point targetCoordinate;
   int rows;
   int cols;
   public bool playerSighted = false;
@@ -23,6 +23,10 @@ public class Enemy : MonoBehaviour {
 
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Player");
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
+    GameMgr.Instance.AddEnemy (this);
+	
+	  rows = MapGenerator.Instance.mapHeight;
+    cols = MapGenerator.Instance.mapWidth;
 	}
 
   /// <summary>
@@ -30,23 +34,30 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   public void TryMove() 
   {
+    //get the location of theplayer and enemy to figure out their coordinates
+    Vector3 playerLocation = Player.Instance.transform.position;
+    Vector3 enemyLocation = transform.position;
+    //Debug.Log("player = " + playerLocation + "   enemy = " + startLocation);
 
-    if (!playerSighted)    
-      movement = MovePickerRandom();
-    else  
-      movement = MovePickerA();
+    if (!playerSighted)
+      targetCoordinate = Pathfinding.Instance.MovePickerRandom(enemyLocation);
+    else
+      targetCoordinate = Pathfinding.Instance.MovePickerA(enemyLocation, playerLocation, obstacleLayer);
 
+    Debug.Log("Target Coordinate: " + targetCoordinate.x + " , " + targetCoordinate.y);
 
-    Vector3 start = transform.position;
-    Vector3 end = start + new Vector3 (movement.x, movement.y);
+    Point endDirection = new Point(targetCoordinate.x - enemyLocation.x, targetCoordinate.y - enemyLocation.y);
+    Vector3 endCoordinate = new Vector3(targetCoordinate.x, targetCoordinate.y);
+
+    //Debug.Log(endCoordinate);
 
     // Check if we can move to the next tile
-    RaycastHit2D checkValid = Physics2D.Linecast (end, end, obstacleLayer);
+    RaycastHit2D checkValid = Physics2D.Linecast (endCoordinate, endCoordinate, obstacleLayer);
 
     // Collider will be null if the linecast didn't hit an obstacle
-    if (checkValid.collider == null || checkValid.collider.GetComponent<PerceptionField>() != null)
+    if (checkValid.collider == null || checkValid.collider.transform == this.transform.GetChild(0))
     {
-      StartCoroutine (Move (movement));
+      StartCoroutine (Move (endDirection));
     }
     else if (checkValid.collider.gameObject.tag == "Player")
     {
@@ -58,135 +69,29 @@ public class Enemy : MonoBehaviour {
     }
   }
 
-  List<Node> SearchableNodes(Point coordinate)
-  {
-    List<Node> ReachableNodes = new List<Node>();
-
-    Vector3 start = new Vector3 (coordinate.x, coordinate.y);
-
-    //assign locations to all directions that can be taken
-    Vector3[] end = new Vector3[4] {
-      start + new Vector3 (1.0f, 0),
-      start + new Vector3 (-1.0f, 0),
-      start + new Vector3 (0, 1.0f),
-      start + new Vector3 (0, -1.0f)
-    };
-
-    /*
-    for (int i = 0; i < 4; i++)
-    {
-      // Check if we can move to the next tile
-      RaycastHit2D checkValid = Physics2D.Linecast (start, end[i], obstacleLayer);
-
-      // Collider will be null if the linecast didn't hit an obstacle
-      if (checkValid.collider == null || checkValid.collider.transform == this.transform.GetChild(0))
-      {
-        ReachableNodes.Add (new Point ((int)end[i].x, (int)end[i].y));
-      }
-      else if (checkValid.collider.gameObject.tag == "Player")
-      {
-        ReachableNodes.Clear ();
-        ReachableNodes.Add (new Point ((int)end[i].x, (int)end[i].y));
-        return ReachableNodes;
-      }
-    }
-*/
-    return ReachableNodes;
-  }
-
-  /// <summary>
-  /// move A*
-  /// </summary>
-  Point MovePickerA()
-  {
-    //get the location of theplayer and enemy to figure out their coordinates
-    Vector3 playerLocation = PlayerMgr.Instance.transform.position;
-    Vector3 enemyLocation = transform.position;
-    //Debug.Log("player = " + playerLocation + "   enemy = " + enemyLocation);
-
-    //Assign the player and enemy coordinates based on their positions in the game
-    Point playerCoordinate = new Point ((int)playerLocation.x, (int)playerLocation.y);
-    Point enemyCoordinate = new Point ((int)enemyLocation.x, (int)enemyLocation.y);
-    //Node currentNode = new Node (enemyCoordinate, enemyCoordinate.TravelCost (playerCoordinate), 0);
-
-    //create an open and closed list as required for A*
-    //List<Node> OpenList = SearchableNodes (currentNode);
-    //List<Node> ClosedList = new List<Node>(){currentNode};
-
-
-    /*
-    while(OpenList.Count > 0)
-    {
-      //succesfully found the destination node
-      if (OpenList[0].coordinate = playerCoordinate)
-      {
-        //find the first move to be made in the path found
-    
-        //create a temporary node for traversal and make it the destination node
-        Node traversalNode = OpenList[0];
-        while (traversalNode.parent.parent != traversalNode.parent)
-        {
-          traversalNode = traversalNode.parent;
-        }
-
-        return traversalNode.parent.coordinate;
-      }
-
-
-    }
-*/
-    return new Point();
-  }
-
-  /// <summary>
-  /// Random move
-  /// </summary>
-  Point MovePickerRandom()
-  {
-    switch (Random.Range (0, 5))
-    {
-      case 0:
-        return new Point(0,0);
-      case 1:
-        return new Point(0,1);
-      case 2:
-        return new Point(0,-1);
-      case 3:
-        return new Point(1,0);
-      case 4:
-        return new Point(-1,0);
-    }
-    return new Point(0,0);
-  }
-
-
   /// <summary>
   /// Attack the Player
   /// </summary>
   void Attack()
   {
-    PlayerMgr.Instance.Defend (stats.attackPower);
+    Player.Instance.Defend (stats.attackPower);
   }
 
   /// <summary>
   /// Defend the specified attack.
   /// </summary>
   /// <param name="attack">The attack power from the Player</param>
-  public int Defend(int attack)
+  public void Defend(int attack)
   {
     int damage = Mathf.Max (attack - stats.defense, 0);
-    HUDMgr.Instance.PrintAction ("Player attacks Enemy for: " + damage + " damage!");
     DataMgr.Instance.currentLevel.damageGiven += damage;
-    stats.currentHealth -= damage;
-    if (stats.currentHealth < 0)
+    stats.health -= damage;
+    if (stats.health < 0)
     {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
-      HUDMgr.Instance.PrintAction("Enemy killed for 10 xp!");
-      return 10;
     }
-    return 0;
   }
 
   /// <summary>
@@ -226,14 +131,9 @@ public class Enemy : MonoBehaviour {
     stats.defense = value;
   }
 
-  public void SetCurrentHealth(int value)
+  public void SetHealth(int value)
   {
-    stats.currentHealth = value;
-  }
-
-  public void SetMaxHealth(int value)
-  {
-    stats.maxHealth = value;
+    stats.health = value;
   }
 
   public void SetEnergy(int value)
@@ -256,14 +156,9 @@ public class Enemy : MonoBehaviour {
     return stats.defense;
   }
 
-  public int GetMaxHealth()
+  public int GetHealth()
   {
-    return stats.maxHealth;
-  }
-
-  public int GetCurrentHealth()
-  {
-    return stats.currentHealth;
+    return stats.health;
   }
 
   public int GetEnergy()
@@ -284,6 +179,47 @@ public class Node
   public int totalCost;
   public Node parent;
   public Point coordinate;
+  /*
+  public override bool Equals(object obj)
+  {
+    if (obj == null) return false;
+    Node objAsNode = obj as Node;
+    if (objAsNode == null) return false;
+    else return Equals(objAsNode);
+  }
+
+  public override int GetHashCode()
+  {
+    return heuristic;
+  }
+
+  public bool Equals(Node other)
+  {
+    if (other == null) return false;
+    return (
+      this.coordinate == other.coordinate &&
+      this.movementCost == other.movementCost &&
+      this.totalCost == other.totalCost &&
+      this.heuristic == other.heuristic);
+  }
+*/
+  public static bool operator !=(Node node1, Node node2) 
+  {
+    return !(
+      node1.coordinate == node2.coordinate &&
+      node1.movementCost == node2.movementCost &&
+      node1.totalCost == node2.totalCost &&
+      node1.heuristic == node2.heuristic);
+  }
+
+  public static bool operator ==(Node node1, Node node2) 
+  {
+    return (
+      node1.coordinate == node2.coordinate &&
+      node1.movementCost == node2.movementCost &&
+      node1.totalCost == node2.totalCost &&
+      node1.heuristic == node2.heuristic);
+  }
 
   public Node()
   {
@@ -291,6 +227,24 @@ public class Node
     movementCost = 0;
     totalCost = 0;
     parent = null;
+  }
+
+  public Node(Node otherNode)
+  {
+    coordinate = otherNode.coordinate;
+    heuristic = otherNode.heuristic;
+    movementCost = otherNode.movementCost;
+    totalCost = otherNode.heuristic + otherNode.movementCost;
+    parent = otherNode.parent;
+  }
+
+  public Node(Point Coordinate, int Heuristic, int MovementCost)
+  {
+    coordinate = Coordinate;
+    heuristic = Heuristic;
+    movementCost = MovementCost;
+    totalCost = Heuristic + MovementCost;
+    parent = this;
   }
 
   public Node(Point Coordinate, int Heuristic, int MovementCost, Node Parent)
@@ -303,70 +257,29 @@ public class Node
   }
 }
 
-[System.Serializable]
 public class EnemyData
 {
     public int attackPower;
     public int defense;
-    public int maxHealth;
-    public int currentHealth;
+    public int health;
     public int damageDone;
     public int combatTurns;
     public int energy;
     public int range;
     public float accuracy;
     public bool alive;
-  
-  public EnemyData()
-  {
-    this.attackPower = 1;
-    this.defense = 1;
-    this.maxHealth = 1;
-    this.currentHealth = 1;
-    this.damageDone = 0;
-    this.combatTurns = 0;
-    this.energy = 1;
-    this.accuracy = 1;
-    this.alive = true;
-  }
 
+    // ADD CONSTRUCTORS, SETTERS, GETTERS
   public EnemyData(int att, int def, int hp, int energy, int range, float accuracy)
   {
     this.attackPower = att;
     this.defense = def;
-    this.maxHealth = hp;
-    this.currentHealth = hp;
+    this.health = hp;
     this.damageDone = 0;
     this.combatTurns = 0;
     this.energy = energy;
     this.range = range;
     this.accuracy = accuracy;
     this.alive = true;
-  }
-
-  public void SetAttackPower(int val)
-  {
-    attackPower = val;
-  }
-
-  public void SetDefense(int val)
-  {
-    defense = val;
-  }
-
-  public void SetHealth(int val)
-  {
-    currentHealth = val;
-    maxHealth = val;
-  }
-
-  public void SetEnergy(int val)
-  {
-    energy = val;
-  }
-
-  public void SetAccuracy(float val)
-  {
-    accuracy = val;
   }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -20,9 +20,36 @@ public class Point
     this.y = y;
   }
 
+  public Point(float x, float y)
+  {
+    this.x = (int)x;
+    this.y = (int)y;
+  }
+
+  public static Point operator +(Point p1, Point p2) 
+  {
+    return new Point(p1.x + p2.x, p1.y + p2.y);
+  }
+
+  public static bool operator !=(Point p1, Point p2) 
+  {
+    if (!(p1.x == p2.x && p1.y == p2.y))
+      return true;
+    else
+      return false;
+  }
+
+  public static bool operator ==(Point p1, Point p2) 
+  {
+    if (p1.x == p2.x && p1.y == p2.y)
+      return true;
+    else
+      return false;
+  }
+
   public int TravelCost(Point destination)
   {
-    if(this.x == null || this.y == null)
+    if(this.x == -1 && this.y == -1)
       return -1;
 
     return Mathf.Abs (this.x - destination.x) + Mathf.Abs (this.y - destination.y);
