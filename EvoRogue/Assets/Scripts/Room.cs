@@ -1,8 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+[System.Serializable]
 public class Point
 {
+  public int x;
+  public int y;
+
   public Point()
   {
     this.x = -1;
@@ -23,8 +28,8 @@ public class Point
     return Mathf.Abs (this.x - destination.x) + Mathf.Abs (this.y - destination.y);
   }
 
-  public int x { get; set; }
-  public int y { get; set; }
+  public int X { get; set; }
+  public int Y { get; set; }
 }
 
 public class Room
@@ -37,6 +42,7 @@ public class Room
   private int bottom;
   private int left;
   private int right;
+  private List<Point> doors;
 
   public int X { get { return x; } }
   public int Y { get { return y; } }
@@ -46,6 +52,7 @@ public class Room
   public int Bottom { get { return bottom; } }
   public int Left { get { return left; } }
   public int Right { get { return right; } }
+  public List<Point> Doors { get { return doors; } }
 
   public Room(int x, int y, int width, int height)
   {
@@ -57,6 +64,7 @@ public class Room
     this.bottom     = this.y + this.roomHeight;
     this.left       = this.x;
     this.right      = this.x + this.roomWidth;
+    this.doors = new List<Point> ();
   } 
 
   /// <summary>
@@ -82,4 +90,20 @@ public class Room
     return xOverlap && yOverlap;
   }
 
+  public bool IsDoor(Point doorPt)
+  {
+    foreach (Point door in this.doors)
+    {
+      if (door.x == doorPt.x && door.y == doorPt.y)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void AddDoor(Point doorPt)
+  {
+    this.doors.Add (doorPt);
+  }
 }

@@ -13,12 +13,12 @@ public class MapGenerator : MonoBehaviour
     Obstacle
   }
 
-  public int mapWidth = 40;
-  public int mapHeight = 40;
+  public int mapWidth;
+  public int mapHeight;
   public int numEnemies = 5;
-  public Point numRooms = new Point (5, 15);
-  public Point roomWidth = new Point (3, 8);
-  public Point roomHeight = new Point (3, 8);
+  public Point numRooms;
+  public Point roomWidth;
+  public Point roomHeight;
 
 
   public GameObject[] groundTiles;
@@ -50,9 +50,8 @@ public class MapGenerator : MonoBehaviour
     float playerY = rooms[0].Y + Mathf.Floor(rooms[0].Height / 2);
     GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
     GenerateEnemies ();
-    float exitX = rooms[1].X + rooms[1].Width / 2;
-    float exitY = rooms[1].Y + rooms[1].Height / 2;
-    Instantiate (exit, new Vector3 (exitX, exitY, -1.0f), Quaternion.identity);
+    Point exitPoint = GetWalkablePoint (rooms [1]);
+    Instantiate (exit, new Vector3 (exitPoint.x, exitPoint.y, -1.0f), Quaternion.identity);
     InformDataManager ();
   }
 
@@ -90,7 +89,7 @@ public class MapGenerator : MonoBehaviour
     for (int i = 0; i < numEnemies; i++)
     {
       int roomNum = Random.Range (0, rooms.Count);
-      Point randPos = rooms[roomNum].GetRandomPoint ();
+      Point randPos = GetWalkablePoint (rooms [roomNum]);
       Debug.Log (randPos.x + " " + randPos.y);
       var newEnemy = (GameObject)Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
       if (nextGen.Count > 0 && nextGen.Count > i)
@@ -104,6 +103,16 @@ public class MapGenerator : MonoBehaviour
     {
       GameMgr.Instance.AddEnemy (e.GetComponent<Enemy> ());
     }
+  }
+
+  Point GetWalkablePoint(Room room)
+  {
+    Point chosen = room.GetRandomPoint ();
+    while (map [chosen.y] [chosen.x] != Tile.Ground)
+    {
+      chosen = room.GetRandomPoint ();
+    }
+    return chosen;
   }
     
   /// <summary>
@@ -237,6 +246,163 @@ public class MapGenerator : MonoBehaviour
     return false;
   }
 
+  void AddInternalWalls(Room room)
+  {
+    float roomArea = room.Height * room.Width;
+    int maxWallTiles = Mathf.RoundToInt(roomArea * 0.10f);
+    Debug.Log ("Max tiles: " + maxWallTiles);
+
+    int numWalls = 0;
+    float wallProb = Random.value;
+
+    if (wallProb <= 0.10f)
+    {
+      numWalls = 0;
+    }
+    else if (wallProb <= 0.40f)
+    {
+      numWalls = 1;
+    }
+    else if (wallProb <= 0.80f)
+    {
+      numWalls = 2;
+    }
+    else
+    {
+      numWalls = 3;
+    }
+
+    if (numWalls == 0)
+    {
+      return;
+    }
+    int tilePerWall = Mathf.RoundToInt (maxWallTiles / numWalls);
+
+    for (int i = 0; i < numWalls; i++)
+    {
+      // TOP, BOTTOM, LEFT, RIGHT
+      int wallChoice = Random.Range (0, 4);
+      Point startingPoint = new Point ();
+      switch (wallChoice)
+      {
+        // TOP
+        case 0:
+          startingPoint.x = Random.Range (room.Left, room.Right);
+          startingPoint.y = room.Top;
+          break;
+      
+        // BOTTOM
+        case 1:
+          startingPoint.x = Random.Range (room.Left, room.Right);
+          startingPoint.y = room.Bottom - 1;
+          break;
+
+        // LEFT
+        case 2:
+          startingPoint.x = room.Left;
+          startingPoint.y = Random.Range (room.Top, room.Bottom);
+          break;
+
+        // RIGHT
+        case 3:
+          startingPoint.x = room.Right - 1;
+          startingPoint.y = Random.Range (room.Top, room.Bottom);
+          break;
+      }
+      BuildInnerWall (tilePerWall, wallChoice, startingPoint);
+    }
+  }
+
+  void BuildInnerWall(int numLeft, int lastPlaced, Point currentPos)
+  {
+    if (numLeft < 0 || 
+        currentPos.x < 0 || currentPos.y < 0 ||
+        currentPos.x >= mapWidth || currentPos.y >= mapWidth)
+    {
+      // We are done
+      return;
+    }
+
+    // Create the wall tile
+    Debug.Log("Point: " + currentPos.y + ", " + currentPos.x);
+    map [currentPos.y] [currentPos.x] = Tile.Wall;
+    Point nextPos = currentPos;
+    int nextPlacement = -1;
+
+    // 66% we continue same direction
+    // 33% we change direction
+    float dirChoice = Random.value;
+
+    if (dirChoice <= 0f)
+    { 
+      // Left
+      switch (lastPlaced)
+      {
+        case 0:
+          nextPos.x -= 1;
+          nextPlacement = 3; // From the Right
+          break;
+        case 1:
+          nextPos.x -= 1;
+          nextPlacement = 3; // From the Right
+          break;
+        case 2:
+          nextPos.y -= 1;
+          nextPlacement = 1; // From the Bottom
+          break;
+        case 3:
+          nextPos.y += 1;
+          nextPlacement = 0; // From the Top
+          break;
+      }
+    }
+    else if (dirChoice <= 0f)
+    {
+      // Right
+      switch (lastPlaced)
+      {
+        case 0:
+          nextPos.x += 1;
+          nextPlacement = 2; // From the Left
+          break;
+        case 1:
+          nextPos.x += 1;
+          nextPlacement = 2; // From the Left
+          break;
+        case 2:
+          nextPos.y += 1;
+          nextPlacement = 0; // From the Top
+          break;
+        case 3:
+          nextPos.y -= 1;
+          nextPlacement = 1; // From the Bottom
+          break;
+      }
+    }
+    else
+    {
+      nextPlacement = lastPlaced; // Continuing in the same direction
+      switch (lastPlaced)
+      {
+        case 0:
+          nextPos.y += 1;
+          break;
+        case 1:
+          nextPos.y -= 1;
+          break;
+        case 2:
+          nextPos.x += 1;
+          break;
+        case 3:
+          nextPos.x -= 1;
+          break;
+      }
+    }
+
+    numLeft -= 1;
+    BuildInnerWall (numLeft, nextPlacement, nextPos); 
+  }
+
   void AddObstacles(Room room)
   {
     float obstacleChance = Random.value;
@@ -248,7 +414,7 @@ public class MapGenerator : MonoBehaviour
     {
       for (int i = 0; i < 2; i++)
       {
-        Point obstacleSpot = room.GetRandomPoint ();
+        Point obstacleSpot = GetWalkablePoint(room);
         map [obstacleSpot.y] [obstacleSpot.x] = Tile.Obstacle;
       }
     }
@@ -256,7 +422,7 @@ public class MapGenerator : MonoBehaviour
     {
       for (int i = 0; i < 3; i++)
       {
-        Point obstacleSpot = room.GetRandomPoint ();
+        Point obstacleSpot = GetWalkablePoint(room);
         map [obstacleSpot.y] [obstacleSpot.x] = Tile.Obstacle;
       }
     }
@@ -293,7 +459,8 @@ public class MapGenerator : MonoBehaviour
     
     for (int x = 0; x < rooms.Count; x++)
     {
-      AddObstacles (rooms[x]);
+      AddInternalWalls (rooms[x]);
+      //AddObstacles (rooms[x]);
       if (x == rooms.Count - 1)
       {
         LinkRooms (rooms[x], rooms[0]);
