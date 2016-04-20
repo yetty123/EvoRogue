@@ -82,6 +82,7 @@ public class MapGenerator : MonoBehaviour
     List<EnemyData> nextGen = new List<EnemyData>();
     if (EvolutionMgr.Instance != null && GameMgr.Instance.previousGen.Count != 0)
     {
+      EvolutionMgr.Instance.population = GameMgr.Instance.previousGen;
       nextGen = EvolutionMgr.Instance.Evolve ();
     }
     for (int i = 0; i < numEnemies; i++)
