@@ -117,4 +117,31 @@ public class EvolutionMgr : MonoBehaviour
         }
         return enemy;
     }
+
+  public List<EnemyData> FirstGen()
+  {
+    List<EnemyData> nextGen = new List<EnemyData>();
+    for (int i = 0; i < 5; i++)
+    {
+      EnemyData child = new EnemyData();
+      child.SetAttackPower(UnityEngine.Random.Range(1,4));
+      child.SetHealth(UnityEngine.Random.Range(1, 4));
+      child.SetDefense(UnityEngine.Random.Range(1, 4));
+      child.SetEnergy(UnityEngine.Random.Range(1, 4));
+      child.SetAccuracy(.75F);
+
+      // small chance to mutate the child
+      int mutationChance = UnityEngine.Random.Range(0, 101);
+      if (mutationChance < 5)
+      {
+        child = mutate(child);
+      }
+      nextGen.Add(child);
+
+    }
+
+    return nextGen;
+  }
+
+
 }
