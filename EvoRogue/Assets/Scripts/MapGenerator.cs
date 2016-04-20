@@ -10,7 +10,9 @@ public class MapGenerator : MonoBehaviour
   {
     Wall,
     Ground,
-    Obstacle
+    Obstacle,
+    Path,
+    InnerWall
   }
 
   public int mapWidth;
@@ -20,7 +22,6 @@ public class MapGenerator : MonoBehaviour
   public Point roomWidth;
   public Point roomHeight;
 
-
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
   public GameObject[] obstacleTiles;
@@ -28,7 +29,7 @@ public class MapGenerator : MonoBehaviour
   public GameObject enemy;
 
   private Tile[][] map;
-  private List<Room> rooms;
+  public List<Room> rooms;
   private GameObject levelMap;
 
   void Awake()
@@ -157,6 +158,18 @@ public class MapGenerator : MonoBehaviour
     return true;
   }
 
+  int GetRoomIndexFromPt(Point pt)
+  {
+    for (int i = 0; i < this.rooms.Count; i++)
+    {
+      if (this.rooms [i].ContainsPt (pt))
+      {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   /// <summary>
   /// Makes the path between two 
   /// Points in the X-Direction
@@ -164,12 +177,12 @@ public class MapGenerator : MonoBehaviour
   /// <returns>The Point where the path ends</returns>
   /// <param name="leftPt">The left Point of the given Points</param>
   /// <param name="rightPt">The right Point of the given Points</param>
-  Point MakeXPath(Point leftPt, Point rightPt)
+  Point MakeXPath(Point leftPt, Point rightPt, Room prevRoom)
   {
     Point endPoint = leftPt;
     for (int x = leftPt.x; x < rightPt.x; x++)
     {
-      map[leftPt.y][x] = Tile.Ground;
+      map [leftPt.y] [x] = Tile.Ground;
       endPoint = new Point (x, leftPt.y);
     }
     return endPoint;
@@ -181,11 +194,11 @@ public class MapGenerator : MonoBehaviour
   /// </summary>
   /// <param name="topPt">The top Point of the given Points</param>
   /// <param name="bottomPt">The bottom Point of the given Points</param>
-  void MakeYPath(Point topPt, Point bottomPt)
+  void MakeYPath(Point topPt, Point bottomPt, Room prevRoom)
   {
     for (int y = topPt.y; y <= bottomPt.y; y++)
     {
-      map[y][topPt.x] = Tile.Ground;
+      map [y] [topPt.x] = Tile.Ground;
     }
   }
 
@@ -199,26 +212,47 @@ public class MapGenerator : MonoBehaviour
     Point source = rOne.GetRandomPoint ();
     Point target = rTwo.GetRandomPoint ();
 
+    bool switched = false;
+
     // Make the Horizontal Path
     if (source.x < target.x)
     {
-      source = MakeXPath (source, target);
+      source.x += 1;
+      source = MakeXPath (source, target, rOne);
     }
     else
     {
-      Point temp = MakeXPath (target, source);
+      target.x += 1;
+      Point temp = MakeXPath (target, source, rTwo);
       target = source;
       source = temp;
+      switched = true;
     }
 
     // Make the Vertical Path
     if (source.y < target.y)
     {
-      MakeYPath (source, target);
+      source.y += 1;
+      if (switched)
+      {
+        MakeYPath (source, target, rTwo);
+      }
+      else
+      {
+        MakeYPath (source, target, rOne);
+      }
     }
     else
     {
-      MakeYPath (target, source);
+      target.y += 1;
+      if (switched)
+      {
+        MakeYPath (target, source, rTwo);
+      }
+      else
+      {
+        MakeYPath (target, source, rOne);
+      }
     }
   }
 
@@ -234,9 +268,9 @@ public class MapGenerator : MonoBehaviour
     if (RoomFits (room) && NoRoomsOverlap (room))
     {
       rooms.Add (room);
-      for (int y = room.Top; y < room.Bottom; y++)
+      for (int y = room.Top; y <= room.Bottom; y++)
       {
-        for (int x = room.Left; x < room.Right; x++)
+        for (int x = room.Left; x <= room.Right; x++)
         {
           map[y][x] = Tile.Ground;
         }
@@ -309,11 +343,11 @@ public class MapGenerator : MonoBehaviour
           startingPoint.y = Random.Range (room.Top, room.Bottom);
           break;
       }
-      BuildInnerWall (tilePerWall, wallChoice, startingPoint);
+      BuildInnerWall (tilePerWall, wallChoice, startingPoint, room);
     }
   }
 
-  void BuildInnerWall(int numLeft, int lastPlaced, Point currentPos)
+  void BuildInnerWall(int numLeft, int lastPlaced, Point currentPos, Room room)
   {
     if (numLeft < 0 || 
         currentPos.x < 0 || currentPos.y < 0 ||
@@ -325,7 +359,10 @@ public class MapGenerator : MonoBehaviour
 
     // Create the wall tile
     Debug.Log("Point: " + currentPos.y + ", " + currentPos.x);
-    map [currentPos.y] [currentPos.x] = Tile.Wall;
+    if (map [currentPos.y] [currentPos.x] != Tile.Path)
+    {
+      map [currentPos.y] [currentPos.x] = Tile.InnerWall;
+    }
     Point nextPos = currentPos;
     int nextPlacement = -1;
 
@@ -333,7 +370,7 @@ public class MapGenerator : MonoBehaviour
     // 33% we change direction
     float dirChoice = Random.value;
 
-    if (dirChoice <= 0f)
+    if (dirChoice <= 0.16f)
     { 
       // Left
       switch (lastPlaced)
@@ -356,7 +393,7 @@ public class MapGenerator : MonoBehaviour
           break;
       }
     }
-    else if (dirChoice <= 0f)
+    else if (dirChoice <= 0.33f)
     {
       // Right
       switch (lastPlaced)
@@ -400,7 +437,7 @@ public class MapGenerator : MonoBehaviour
     }
 
     numLeft -= 1;
-    BuildInnerWall (numLeft, nextPlacement, nextPos); 
+    BuildInnerWall (numLeft, nextPlacement, nextPos, room); 
   }
 
   void AddObstacles(Room room)
@@ -428,6 +465,41 @@ public class MapGenerator : MonoBehaviour
     }
   }
 
+  void GetEntryTiles(Room room)
+  {
+    Point origin = new Point (room.x - 1, room.y - 1);
+
+    // Left/Right Sides
+    for (int i = origin.y; i < (room.y + room.roomHeight); i++)
+    {
+      if (map [i] [origin.x] == Tile.Ground)
+      {
+        map [i] [origin.x] = Tile.Path;
+        room.AddDoor (new Point (origin.x, i));
+      }
+      if (map [i] [origin.x + room.roomWidth + 1] == Tile.Ground)
+      {
+        map [i] [origin.x + room.roomWidth + 1] = Tile.Path;
+        room.AddDoor (new Point (origin.x + room.roomWidth + 1, i));
+      }
+    }
+
+    // Top/Bottom Sides
+    for (int i = origin.x; i < (room.x + room.roomWidth); i++)
+    {
+      if (map [origin.y] [i] == Tile.Ground)
+      {
+        map [origin.y] [i] = Tile.Path;
+        room.AddDoor (new Point (i, origin.y));
+      }
+      if (map [origin.y + room.roomHeight + 1] [i] == Tile.Ground)
+      {
+        map [origin.y + room.roomHeight + 1] [i] = Tile.Path;
+        room.AddDoor (new Point (i, origin.y + room.roomHeight + 1));
+      }
+    }
+  }
+
   /// <summary>
   /// Places a number of Rooms up to the
   /// given number in the level and links
@@ -441,8 +513,8 @@ public class MapGenerator : MonoBehaviour
 
     while ((roomsMade < nRooms) && nTries > 0) 
     {
-      int rWidth = Random.Range (roomWidth.x, roomWidth.y);
-      int rHeight = Random.Range (roomHeight.x, roomHeight.y);
+      int rWidth = Random.Range (roomWidth.x, roomWidth.y + 1);
+      int rHeight = Random.Range (roomHeight.x, roomHeight.y + 1);
       int roomX = Random.Range (0, mapWidth - rWidth);
       int roomY = Random.Range (0, mapHeight - rHeight);
       Room newRoom = new Room (roomX, roomY, rWidth, rHeight);
@@ -459,8 +531,6 @@ public class MapGenerator : MonoBehaviour
     
     for (int x = 0; x < rooms.Count; x++)
     {
-      AddInternalWalls (rooms[x]);
-      //AddObstacles (rooms[x]);
       if (x == rooms.Count - 1)
       {
         LinkRooms (rooms[x], rooms[0]);
@@ -469,6 +539,13 @@ public class MapGenerator : MonoBehaviour
       {
         LinkRooms (rooms[x], rooms[x + 1]);
       }
+    }
+
+    for (int x = 0; x < rooms.Count; x++)
+    {
+      GetEntryTiles (rooms[x]);
+      AddInternalWalls (rooms[x]);
+      AddObstacles (rooms[x]);
     }
   }
 
@@ -483,11 +560,19 @@ public class MapGenerator : MonoBehaviour
     {
       for (int x = 0; x < mapWidth; x++)
       {
-        GameObject tile = wallTiles[Random.Range(0, wallTiles.Length)];
-        if (map [y] [x] == Tile.Ground) 
+        GameObject tile = wallTiles[Random.Range(0, wallTiles.Length-1)];
+        if (map [y] [x] == Tile.Ground)
         {
           tile = groundTiles [0];
-        } 
+        }
+        else if (map [y] [x] == Tile.Path)
+        {
+          tile = groundTiles [1];
+        }
+        else if (map [y] [x] == Tile.InnerWall)
+        {
+          tile = wallTiles [5];
+        }
         else if (map [y] [x] == Tile.Obstacle) 
         {
           tile = groundTiles [0];

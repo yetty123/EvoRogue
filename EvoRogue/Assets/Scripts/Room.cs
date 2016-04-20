@@ -32,17 +32,18 @@ public class Point
   public int Y { get; set; }
 }
 
+[System.Serializable]
 public class Room
 {
-  private int x;
-  private int y;
-  private int roomWidth;
-  private int roomHeight;
-  private int top;
-  private int bottom;
-  private int left;
-  private int right;
-  private List<Point> doors;
+  public int x;
+  public int y;
+  public int roomWidth;
+  public int roomHeight;
+  public int top;
+  public int bottom;
+  public int left;
+  public int right;
+  public List<Point> doors;
 
   public int X { get { return x; } }
   public int Y { get { return y; } }
@@ -61,9 +62,9 @@ public class Room
     this.roomWidth  = width;
     this.roomHeight = height;
     this.top        = this.y;
-    this.bottom     = this.y + this.roomHeight;
+    this.bottom     = this.y + this.roomHeight - 1;
     this.left       = this.x;
-    this.right      = this.x + this.roomWidth;
+    this.right      = this.x + this.roomWidth - 1;
     this.doors = new List<Point> ();
   } 
 
@@ -77,6 +78,13 @@ public class Room
     result.x = Random.Range (1, this.roomWidth) + this.x;
     result.y = Random.Range (1, this.roomHeight) + this.y;
     return result;
+  }
+
+  public bool ContainsPt(Point pt)
+  {
+    bool fitX = ((pt.x < this.roomWidth + this.x) && (pt.x > this.x));
+    bool fitY = ((pt.y < this.roomHeight + this.y) && (pt.y > this.y));
+    return fitX && fitY;
   }
 
   /// <summary>
