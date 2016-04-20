@@ -35,7 +35,7 @@ public class Enemy : MonoBehaviour {
   public void TryMove() 
   {
     //get the location of theplayer and enemy to figure out their coordinates
-    Vector3 playerLocation = Player.Instance.transform.position;
+    Vector3 playerLocation = PlayerMgr.Instance.transform.position;
     Vector3 enemyLocation = transform.position;
     //Debug.Log("player = " + playerLocation + "   enemy = " + startLocation);
 
@@ -74,24 +74,26 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   void Attack()
   {
-    Player.Instance.Defend (stats.attackPower);
+    PlayerMgr.Instance.Defend (stats.attackPower);
   }
 
   /// <summary>
   /// Defend the specified attack.
   /// </summary>
   /// <param name="attack">The attack power from the Player</param>
-  public void Defend(int attack)
+  public int Defend(int attack)
   {
     int damage = Mathf.Max (attack - stats.defense, 0);
     DataMgr.Instance.currentLevel.damageGiven += damage;
-    stats.health -= damage;
-    if (stats.health < 0)
+    stats.currentHealth -= damage;
+    if (stats.currentHealth < 0)
     {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
+      return 100;
     }
+    return 0;
   }
 
   /// <summary>
@@ -133,7 +135,7 @@ public class Enemy : MonoBehaviour {
 
   public void SetHealth(int value)
   {
-    stats.health = value;
+    stats.currentHealth = value;
   }
 
   public void SetEnergy(int value)
@@ -158,7 +160,12 @@ public class Enemy : MonoBehaviour {
 
   public int GetHealth()
   {
-    return stats.health;
+    return stats.currentHealth;
+  }
+
+  public int GetMaxHealth()
+  {
+    return stats.maxHealth;
   }
 
   public int GetEnergy()
@@ -261,7 +268,8 @@ public class EnemyData
 {
     public int attackPower;
     public int defense;
-    public int health;
+    public int currentHealth;
+    public int maxHealth;
     public int damageDone;
     public int combatTurns;
     public int energy;
@@ -269,17 +277,57 @@ public class EnemyData
     public float accuracy;
     public bool alive;
 
+  public EnemyData()
+  {
+    this.attackPower = 1;
+    this.defense = 1;
+    this.maxHealth = 1;
+    this.currentHealth = 1;
+    this.damageDone = 0;
+    this.combatTurns = 0;
+    this.energy = 1;
+    this.accuracy = 1;
+    this.alive = true;
+  }
+
     // ADD CONSTRUCTORS, SETTERS, GETTERS
   public EnemyData(int att, int def, int hp, int energy, int range, float accuracy)
   {
     this.attackPower = att;
     this.defense = def;
-    this.health = hp;
+    this.currentHealth = hp;
+    this.maxHealth = hp;
     this.damageDone = 0;
     this.combatTurns = 0;
     this.energy = energy;
     this.range = range;
     this.accuracy = accuracy;
     this.alive = true;
+  }
+
+  public void SetAttackPower(int val)
+  {
+    attackPower = val;
+  }
+
+  public void SetDefense(int val)
+  {
+    defense = val;
+  }
+
+  public void SetHealth(int val)
+  {
+    currentHealth = val;
+    maxHealth = val;
+  }
+
+  public void SetEnergy(int val)
+  {
+    energy = val;
+  }
+
+  public void SetAccuracy(float val)
+  {
+    accuracy = val;
   }
 }
