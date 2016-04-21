@@ -88,7 +88,7 @@ public class MapGenerator : MonoBehaviour
 
     // Clear a path from the Player to the Exit
     // and mark these tiles so they can't be blocked
-    ClearAPath (new Vector2 (playerX, playerY), new Vector2 (exitPoint.x, exitPoint.y), PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer);
+    ClearAPath (new Vector2 (playerX, playerY), new Vector2 (exitPoint.x, exitPoint.y), PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer, 80);
 
     // Destroy the current representation
     // of the map that we needed for initial A*
@@ -102,8 +102,12 @@ public class MapGenerator : MonoBehaviour
     InformDataManager ();
   }
 
-  void ClearAPath(Vector3 start, Vector3 end, LayerMask obstacleLayer)
+  void ClearAPath(Vector3 start, Vector3 end, LayerMask obstacleLayer, int tries)
   {
+    if (tries <= 0)
+    {
+      Debug.Log ("Bailing");
+    }
     if (map [(int)start.y] [(int)start.x] != Tile.Path)
     {
       map [(int)start.y] [(int)start.x] = Tile.Path;
@@ -125,7 +129,8 @@ public class MapGenerator : MonoBehaviour
       return;
     }
     start = new Vector3 (pathPoint.x, pathPoint.y);
-    ClearAPath (start, end, obstacleLayer);
+    tries -= 1;
+    ClearAPath (start, end, obstacleLayer, tries);
   }
 
   /// <summary>
