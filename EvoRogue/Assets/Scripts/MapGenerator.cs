@@ -21,6 +21,8 @@ public class MapGenerator : MonoBehaviour
   public Point numRooms;
   public Point roomWidth;
   public Point roomHeight;
+  public float innerWallDensity;
+  public float obstacleDensity;
 
   public GameObject[] groundTiles;
   public GameObject[] wallTiles;
@@ -50,10 +52,42 @@ public class MapGenerator : MonoBehaviour
     float playerX = rooms[0].X + Mathf.Floor(rooms[0].Width / 2);
     float playerY = rooms[0].Y + Mathf.Floor(rooms[0].Height / 2);
     GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
-    GenerateEnemies ();
     Point exitPoint = GetWalkablePoint (rooms [1]);
     Instantiate (exit, new Vector3 (exitPoint.x, exitPoint.y, -1.0f), Quaternion.identity);
+    ClearAPath (new Vector2 (playerX, playerY), new Vector2 (exitPoint.x, exitPoint.y), PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer);
+    Destroy (GameObject.Find("LevelMap"));
+    levelMap = new GameObject ("LevelMap");
+    // Add obstacles
+    AddInteralObstacles();
+    InstantiateTiles ();
+    GenerateEnemies ();
     InformDataManager ();
+  }
+
+  void ClearAPath(Vector3 start, Vector3 end, LayerMask obstacleLayer)
+  {
+    if (map [(int)start.y] [(int)start.x] != Tile.Path)
+    {
+      map [(int)start.y] [(int)start.x] = Tile.Path;
+      map [(int)end.y] [(int)end.x] = Tile.Path;
+    }
+    Point pathPoint = Pathfinding.Instance.MovePickerA (start, end, obstacleLayer);
+    if (start.x != end.x || start.y != end.y)
+    {
+      if (pathPoint.x == -1 && pathPoint.y == -1)
+      {
+        Debug.Log ("Bad Path!");
+        return;
+      }
+      map [pathPoint.y] [pathPoint.x] = Tile.Path;
+    }
+    else
+    {
+      Debug.Log ("Path found!");
+      return;
+    }
+    start = new Vector3 (pathPoint.x, pathPoint.y);
+    ClearAPath (start, end, obstacleLayer);
   }
 
   /// <summary>
@@ -283,7 +317,7 @@ public class MapGenerator : MonoBehaviour
   void AddInternalWalls(Room room)
   {
     float roomArea = room.Height * room.Width;
-    int maxWallTiles = Mathf.RoundToInt(roomArea * 0.10f);
+    int maxWallTiles = Mathf.RoundToInt(roomArea * innerWallDensity);
     Debug.Log ("Max tiles: " + maxWallTiles);
 
     int numWalls = 0;
@@ -328,7 +362,7 @@ public class MapGenerator : MonoBehaviour
         // BOTTOM
         case 1:
           startingPoint.x = Random.Range (room.Left, room.Right);
-          startingPoint.y = room.Bottom - 1;
+          startingPoint.y = room.Bottom;
           break;
 
         // LEFT
@@ -339,7 +373,7 @@ public class MapGenerator : MonoBehaviour
 
         // RIGHT
         case 3:
-          startingPoint.x = room.Right - 1;
+          startingPoint.x = room.Right;
           startingPoint.y = Random.Range (room.Top, room.Bottom);
           break;
       }
@@ -443,13 +477,14 @@ public class MapGenerator : MonoBehaviour
   void AddObstacles(Room room)
   {
     float obstacleChance = Random.value;
+    float roomArea = room.roomWidth * room.roomHeight;
     if (obstacleChance <= 0.25f)
     {
       return;
     }
     else if (obstacleChance <= 0.75f)
     {
-      for (int i = 0; i < 2; i++)
+      for (int i = 0; i < Mathf.RoundToInt(roomArea * obstacleDensity); i++)
       {
         Point obstacleSpot = GetWalkablePoint(room);
         map [obstacleSpot.y] [obstacleSpot.x] = Tile.Obstacle;
@@ -457,7 +492,7 @@ public class MapGenerator : MonoBehaviour
     }
     else
     {
-      for (int i = 0; i < 3; i++)
+      for (int i = 0; i < Mathf.RoundToInt(roomArea * obstacleDensity * 2); i++)
       {
         Point obstacleSpot = GetWalkablePoint(room);
         map [obstacleSpot.y] [obstacleSpot.x] = Tile.Obstacle;
@@ -540,7 +575,10 @@ public class MapGenerator : MonoBehaviour
         LinkRooms (rooms[x], rooms[x + 1]);
       }
     }
+  }
 
+  void AddInteralObstacles()
+  {
     for (int x = 0; x < rooms.Count; x++)
     {
       GetEntryTiles (rooms[x]);
@@ -567,11 +605,11 @@ public class MapGenerator : MonoBehaviour
         }
         else if (map [y] [x] == Tile.Path)
         {
-          tile = groundTiles [1];
+          tile = groundTiles [0];
         }
         else if (map [y] [x] == Tile.InnerWall)
         {
-          tile = wallTiles [5];
+          //tile = wallTiles [5];
         }
         else if (map [y] [x] == Tile.Obstacle) 
         {
