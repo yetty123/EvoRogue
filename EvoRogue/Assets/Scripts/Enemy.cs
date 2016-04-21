@@ -23,7 +23,6 @@ public class Enemy : MonoBehaviour {
 
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Player");
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
-    GameMgr.Instance.AddEnemy (this);
 	
 	  rows = MapGenerator.Instance.mapHeight;
     cols = MapGenerator.Instance.mapWidth;
