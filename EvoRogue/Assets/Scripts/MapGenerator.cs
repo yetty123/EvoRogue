@@ -42,24 +42,24 @@ public class MapGenerator : MonoBehaviour
   public void AdjustToData()
   {
     LevelData prevLevel = DataMgr.Instance.GetPreviousLevelData ();
-    if (DataMgr.Instance.averageEnemiesKilled < 1.5f)
+    if (DataMgr.Instance.averageEnemiesKilled < 2.5f)
     {
       mapWidth = Mathf.Max (Mathf.RoundToInt(prevLevel.mapWidth * 0.75f), 20);
       mapHeight = Mathf.Max (Mathf.RoundToInt(prevLevel.mapHeight * 0.75f), 20);
-      numRooms = new Point (2, Mathf.Max(Mathf.RoundToInt(prevLevel.numRooms * 1.5f), 5));
-      roomWidth = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 5));
-      roomHeight = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 5));
+      numRooms = new Point (Mathf.Max(2, Mathf.RoundToInt(prevLevel.numRooms * 0.5f)), Mathf.Min(Mathf.RoundToInt(prevLevel.numMoves * 2.0f), 8));
+      roomWidth = new Point (3, Mathf.Min(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 5));
+      roomHeight = new Point (3, Mathf.Min(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 5));
       innerWallDensity = 0.25f;
       obstacleDensity = 0.05f;
       numEnemies += 1;
     }
     else
     {
-      mapWidth = Mathf.Min (Mathf.RoundToInt(prevLevel.mapWidth * 2.0f), 30);
-      mapHeight = Mathf.Min (Mathf.RoundToInt(prevLevel.mapHeight * 2.0f), 30);
-      numRooms = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.numRooms * 1.5f), 8));
-      roomWidth = new Point (4, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 8));
-      roomHeight = new Point (4, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 8));
+      mapWidth = Mathf.Min (Mathf.RoundToInt(prevLevel.mapWidth * 2.0f), 50);
+      mapHeight = Mathf.Min (Mathf.RoundToInt(prevLevel.mapHeight * 2.0f), 50);
+      numRooms = new Point (Mathf.Max(3, Mathf.RoundToInt(prevLevel.numRooms * 1.5f)), Mathf.Min(Mathf.RoundToInt(prevLevel.numRooms * 3.0f), 20));
+      roomWidth = new Point (4, Mathf.Min(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 12));
+      roomHeight = new Point (4, Mathf.Min(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 12));
       innerWallDensity = 0.20f;
       obstacleDensity = 0.10f;
       if (DataMgr.Instance.averageEnemiesKilled > 3.0f)
@@ -69,6 +69,13 @@ public class MapGenerator : MonoBehaviour
           numEnemies -= 1;
         }
       }
+    }
+
+    if (prevLevel.numRooms == 0 || prevLevel.averageRoomHeight == 0 || prevLevel.averageRoomWidth == 0)
+    {
+      numRooms = new Point (3, 5);
+      roomWidth = new Point (5, 10);
+      roomHeight = new Point (5, 10);
     }
   }
 
@@ -202,6 +209,7 @@ public class MapGenerator : MonoBehaviour
       chosen = room.GetRandomPoint ();
       if (tries <= 0)
       {
+        Debug.Log ("Ran out of tries. We want to avoid infinitely looping.");
         return chosen;
       }
       tries -= 1;

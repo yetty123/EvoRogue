@@ -132,7 +132,7 @@ public class DataMgr : MonoBehaviour {
     averageDmgGiven = totalDmgGiven / levelsPlayed;
     averageDmgTaken = totalDmgTaken / levelsPlayed;
     averageNumEnemies = totalNumEnemies / levelsPlayed;
-    averageEnemiesKilled = totalEnemiesKilled / levelsPlayed;
+    averageEnemiesKilled = (float)totalEnemiesKilled / levelsPlayed;
     averageNumRooms = totalNumRooms / levelsPlayed;
     averageRoomWidth = totalAvgRoomWidth / levelsPlayed;
     averageRoomHeight = totalAvgRoomHeight / levelsPlayed;
