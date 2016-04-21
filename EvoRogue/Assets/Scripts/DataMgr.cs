@@ -68,6 +68,18 @@ public class DataMgr : MonoBehaviour {
     averageRoomsEntered = 0;
   }
 
+  public LevelData GetPreviousLevelData()
+  {
+    if (levels.Count == 0)
+    {
+      return new LevelData ();
+    }
+    else
+    {
+      return levels [levels.Count - 1];
+    }
+  }
+
   /// <summary>
   /// Adds the current level to the list
   /// of levels that have been played, resets
@@ -132,6 +144,8 @@ public class DataMgr : MonoBehaviour {
 public struct LevelData
 {
   public int level;
+  public int mapWidth;
+  public int mapHeight;
   public int numMoves;
   public int numRooms;
   public int roomsEntered;

@@ -41,23 +41,24 @@ public class MapGenerator : MonoBehaviour
 
   public void AdjustToData()
   {
+    LevelData prevLevel = DataMgr.Instance.GetPreviousLevelData ();
     if (DataMgr.Instance.averageEnemiesKilled < 1.5f)
     {
-      mapWidth = 20;
-      mapHeight = 20;
-      numRooms = new Point (2, 5);
-      roomWidth = new Point (3, 5);
-      roomHeight = new Point (3, 5);
+      mapWidth = Mathf.Max (Mathf.RoundToInt(prevLevel.mapWidth * 0.75f), 20);
+      mapHeight = Mathf.Max (Mathf.RoundToInt(prevLevel.mapHeight * 0.75f), 20);
+      numRooms = new Point (2, Mathf.Max(Mathf.RoundToInt(prevLevel.numRooms * 1.5f), 5));
+      roomWidth = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 5));
+      roomHeight = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 5));
       innerWallDensity = 0.25f;
       obstacleDensity = 0.05f;
     }
     else
     {
-      mapWidth = 30;
-      mapHeight = 30;
-      numRooms = new Point (3, 8);
-      roomWidth = new Point (4, 8);
-      roomHeight = new Point (4, 8);
+      mapWidth = Mathf.Min (Mathf.RoundToInt(prevLevel.mapWidth * 2.0f), 30);
+      mapHeight = Mathf.Min (Mathf.RoundToInt(prevLevel.mapHeight * 2.0f), 30);
+      numRooms = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.numRooms * 1.5f), 8));
+      roomWidth = new Point (4, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 8));
+      roomHeight = new Point (4, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 8));
       innerWallDensity = 0.20f;
       obstacleDensity = 0.10f;
     }
@@ -70,7 +71,6 @@ public class MapGenerator : MonoBehaviour
   {
     // Adjust level params based on Data
     AdjustToData ();
-
     levelMap = new GameObject ("LevelMap");
     rooms = new List<Room> ();
     SetupMapArray ();
@@ -139,6 +139,8 @@ public class MapGenerator : MonoBehaviour
   /// </summary>
   void InformDataManager()
   {
+    DataMgr.Instance.currentLevel.mapWidth = mapWidth;
+    DataMgr.Instance.currentLevel.mapHeight = mapHeight;
     DataMgr.Instance.currentLevel.numRooms += rooms.Count;
     float totalWidth = 0.0f;
     float totalHeight = 0.0f;
