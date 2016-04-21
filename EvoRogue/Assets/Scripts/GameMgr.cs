@@ -21,6 +21,10 @@ public class GameMgr : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
   {
+    if (Input.GetKeyDown (KeyCode.G))
+    {
+      ResetLevel ();
+    }
     if (playersTurn || enemiesMoving)
     {
       return;
