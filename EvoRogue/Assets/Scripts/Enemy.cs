@@ -263,6 +263,7 @@ public class Node
   }
 }
 
+[System.Serializable]
 public class EnemyData
 {
     public int attackPower;

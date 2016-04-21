@@ -39,25 +39,63 @@ public class MapGenerator : MonoBehaviour
     Instance = this;
   }
 
+  public void AdjustToData()
+  {
+    if (DataMgr.Instance.averageEnemiesKilled < 1.5f)
+    {
+      mapWidth = 20;
+      mapHeight = 20;
+      numRooms = new Point (2, 5);
+      roomWidth = new Point (3, 5);
+      roomHeight = new Point (3, 5);
+      innerWallDensity = 0.25f;
+      obstacleDensity = 0.05f;
+    }
+    else
+    {
+      mapWidth = 30;
+      mapHeight = 30;
+      numRooms = new Point (3, 8);
+      roomWidth = new Point (4, 8);
+      roomHeight = new Point (4, 8);
+      innerWallDensity = 0.20f;
+      obstacleDensity = 0.10f;
+    }
+  }
+
   /// <summary>
   /// Generates the level.
   /// </summary>
   public void GenerateLevel()
   {
+    // Adjust level params based on Data
+    AdjustToData ();
+
     levelMap = new GameObject ("LevelMap");
     rooms = new List<Room> ();
     SetupMapArray ();
+
+    // Create the empty rooms
     GenerateRooms (Random.Range (numRooms.x, numRooms.y));
     InstantiateTiles ();
+
+    // Place the Player and Exit
     float playerX = rooms[0].X + Mathf.Floor(rooms[0].Width / 2);
     float playerY = rooms[0].Y + Mathf.Floor(rooms[0].Height / 2);
     GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
     Point exitPoint = GetWalkablePoint (rooms [1]);
     Instantiate (exit, new Vector3 (exitPoint.x, exitPoint.y, -1.0f), Quaternion.identity);
+
+    // Clear a path from the Player to the Exit
+    // and mark these tiles so they can't be blocked
     ClearAPath (new Vector2 (playerX, playerY), new Vector2 (exitPoint.x, exitPoint.y), PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer);
-    Destroy (GameObject.Find("LevelMap"));
+
+    // Destroy the current representation
+    // of the map that we needed for initial A*
+    Destroy(levelMap);
     levelMap = new GameObject ("LevelMap");
-    // Add obstacles
+
+    // Add the obstacles and re-instantiate the tiles
     AddInteralObstacles();
     InstantiateTiles ();
     GenerateEnemies ();
@@ -606,10 +644,13 @@ public class MapGenerator : MonoBehaviour
         else if (map [y] [x] == Tile.Path)
         {
           tile = groundTiles [0];
+          //tile = groundTiles [6];
+          // ^ uncomment to see places where obstacles can't be placed
         }
         else if (map [y] [x] == Tile.InnerWall)
         {
           //tile = wallTiles [5];
+          // ^ uncomment to see the inner walls
         }
         else if (map [y] [x] == Tile.Obstacle) 
         {
