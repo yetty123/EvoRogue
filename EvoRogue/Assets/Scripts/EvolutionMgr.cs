@@ -65,8 +65,8 @@ public class EvolutionMgr : MonoBehaviour
         Enemy mom;
         Enemy dad;
         int mutationChance = 0;
-        // for now, constant 5 enemies per level
-        for (int i = 0; i < 5; i++)
+
+        for (int i = 0; i < MapGenerator.Instance.numEnemies; i++)
         {
             Debug.Log (population.Count);
             // create a child based on two high fitness enemies

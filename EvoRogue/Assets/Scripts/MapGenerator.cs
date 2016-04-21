@@ -17,7 +17,7 @@ public class MapGenerator : MonoBehaviour
 
   public int mapWidth;
   public int mapHeight;
-  public int numEnemies = 5;
+  public int numEnemies;
   public Point numRooms;
   public Point roomWidth;
   public Point roomHeight;
@@ -51,6 +51,7 @@ public class MapGenerator : MonoBehaviour
       roomHeight = new Point (3, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 5));
       innerWallDensity = 0.25f;
       obstacleDensity = 0.05f;
+      numEnemies += 1;
     }
     else
     {
@@ -61,6 +62,13 @@ public class MapGenerator : MonoBehaviour
       roomHeight = new Point (4, Mathf.Max(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 8));
       innerWallDensity = 0.20f;
       obstacleDensity = 0.10f;
+      if (DataMgr.Instance.averageEnemiesKilled > 3.0f)
+      {
+        if (numEnemies > 1)
+        {
+          numEnemies -= 1;
+        }
+      }
     }
   }
 
@@ -188,9 +196,15 @@ public class MapGenerator : MonoBehaviour
   Point GetWalkablePoint(Room room)
   {
     Point chosen = room.GetRandomPoint ();
+    int tries = 40;
     while (map [chosen.y] [chosen.x] != Tile.Ground)
     {
       chosen = room.GetRandomPoint ();
+      if (tries <= 0)
+      {
+        return chosen;
+      }
+      tries -= 1;
     }
     return chosen;
   }
