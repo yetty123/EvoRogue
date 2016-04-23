@@ -23,23 +23,34 @@ public class EvolutionMgr : MonoBehaviour
     // fitness is how it is for stats, combined with how it did in combat
     public int fitness(int index)
     {
-        // ADD IN SOMETHING ABOUT BEING ALIVE IF TURNS IN COMBAT IS MORE THAN 0
         Enemy enemy = population.ElementAt(index);
+        int score = 0;
+        if (enemy.stats.alive == true)
+        {
+            score += enemy.stats.combatTurns;
+        }
+        score += enemy.stats.damageDone;
         int statNormalization = enemy.stats.attackPower + enemy.stats.defense + enemy.stats.maxHealth;
-        return enemy.stats.damageDone + enemy.stats.combatTurns + statNormalization;
+        return score +  statNormalization;
     }
 
     // fitness function - which current enemies did the best?
     // fitness is how it is for stats, combined with how it did in combat
     public int fitness(Enemy enemy)
     {
-        // ADD IN SOMETHING ABOUT BEING ALIVE IF TURNS IN COMBAT IS MORE THAN 0
+        int score = 0;
+        if (enemy.stats.alive == true)
+        {
+            score += enemy.stats.combatTurns;
+        }
+        score += enemy.stats.damageDone;
         int statNormalization = enemy.stats.attackPower + enemy.stats.defense + enemy.stats.maxHealth;
-        return enemy.stats.damageDone + enemy.stats.combatTurns + statNormalization;
+        return score + statNormalization;
     }
 
     // generate the next level's enemies
-    public List<EnemyData> Evolve()
+
+  public List<EnemyData> Evolve()
     {
         // calculate fitness values
         List<int> fitnessVals = new List<int>();
@@ -74,8 +85,8 @@ public class EvolutionMgr : MonoBehaviour
         Enemy mom;
         Enemy dad;
         int mutationChance = 0;
-
-        for (int i = 0; i < MapGenerator.Instance.numEnemies; i++)
+        // for now, constant 5 enemies per level
+        for (int i = 0; i < 5; i++)
         {
             Debug.Log (population.Count);
             // create a child based on two high fitness enemies
@@ -126,4 +137,30 @@ public class EvolutionMgr : MonoBehaviour
         }
         return enemy;
     }
+
+  public List<EnemyData> FirstGen()
+  {
+    List<EnemyData> nextGen = new List<EnemyData>();
+    for (int i = 0; i < 5; i++)
+    {
+      EnemyData child = new EnemyData();
+      child.SetAttackPower(UnityEngine.Random.Range(1,4));
+      child.SetHealth(UnityEngine.Random.Range(1, 4));
+      child.SetDefense(UnityEngine.Random.Range(1, 4));
+      child.SetEnergy(UnityEngine.Random.Range(1, 4));
+      child.SetAccuracy(.75F);
+
+      // small chance to mutate the child
+      int mutationChance = UnityEngine.Random.Range(0, 101);
+      if (mutationChance < 5)
+      {
+        child = mutate(child);
+      }
+      nextGen.Add(child);
+
+    }
+
+    return nextGen;
+  }
 }
+
