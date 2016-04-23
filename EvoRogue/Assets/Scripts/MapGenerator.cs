@@ -176,10 +176,18 @@ public class MapGenerator : MonoBehaviour
   {
     List<GameObject> tempEnemy = new List<GameObject> ();
     List<EnemyData> nextGen = new List<EnemyData>();
-    if (EvolutionMgr.Instance != null && GameMgr.Instance.previousGen.Count != 0)
+    if (EvolutionMgr.Instance != null)
     {
-      EvolutionMgr.Instance.population = GameMgr.Instance.previousGen;
-      nextGen = EvolutionMgr.Instance.Evolve ();
+      if (DataMgr.Instance.levelsPlayed == 1)
+      {
+        nextGen = EvolutionMgr.Instance.FirstGen();
+      } else {
+        if (GameMgr.Instance.previousGen.Count != 0)
+        {
+          EvolutionMgr.Instance.population = GameMgr.Instance.previousGen;
+          nextGen = EvolutionMgr.Instance.Evolve();
+        }
+      }
     }
     for (int i = 0; i < numEnemies; i++)
     {

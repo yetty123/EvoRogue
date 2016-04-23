@@ -16,6 +16,7 @@ public class LevelExit : MonoBehaviour
       pController.StopAllCoroutines ();
       pController.moving = false;
       PlayerMgr.Instance.experience += 100;
+      DataMgr.Instance.score += 100;
       HUDMgr.Instance.PrintAction("100 experience gained!");
       if (PlayerMgr.Instance.CheckLevelUp())
       {

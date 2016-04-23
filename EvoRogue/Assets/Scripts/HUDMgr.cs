@@ -68,7 +68,7 @@ public class HUDMgr : MonoBehaviour {
     levelText.text = LVL + PlayerMgr.Instance.GetLevel().ToString();
     expText.text = EXP + PlayerMgr.Instance.GetXP().ToString () + "/" + PlayerMgr.Instance.GetMaxXP().ToString();
     floorText.text = FLOOR + DataMgr.Instance.levelsPlayed.ToString ();
-    scoreText.text = SCORE + "0";
+    scoreText.text = SCORE + DataMgr.Instance.score.ToString();
     UpdateLog ();
 	}
 }

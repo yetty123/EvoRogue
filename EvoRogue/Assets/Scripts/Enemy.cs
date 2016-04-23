@@ -27,6 +27,7 @@ public class Enemy : MonoBehaviour {
 	  rows = MapGenerator.Instance.mapHeight;
     cols = MapGenerator.Instance.mapWidth;
 	}
+  
 
   /// <summary>
   /// Try to make a move
@@ -73,6 +74,7 @@ public class Enemy : MonoBehaviour {
   /// </summary>
   void Attack()
   {
+        stats.combatTurns += 1;
     PlayerMgr.Instance.Defend (stats.attackPower);
   }
 
@@ -82,15 +84,32 @@ public class Enemy : MonoBehaviour {
   /// <param name="attack">The attack power from the Player</param>
   public int Defend(int attack)
   {
+    stats.combatTurns += 1;
     int damage = Mathf.Max (attack - stats.defense, 0);
+    if (damage == 0)
+        {
+            if (UnityEngine.Random.Range(1,101) > 50)
+            {
+                damage = 1;
+                HUDMgr.Instance.PrintAction("You barely scratch it for 1 damage!");
+            } else
+            {
+                HUDMgr.Instance.PrintAction("The enemy blocks your attack!");
+            }
+        } else
+        {
+            HUDMgr.Instance.PrintAction("You hit for " + damage + " damage!");
+        }
     DataMgr.Instance.currentLevel.damageGiven += damage;
     stats.currentHealth -= damage;
     if (stats.currentHealth < 0)
     {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
+      stats.alive = false;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
-      return 100;
+      DataMgr.Instance.score += EvolutionMgr.Instance.fitness(this);
+      return 10;
     }
     return 0;
   }
@@ -111,6 +130,7 @@ public class Enemy : MonoBehaviour {
       transform.position = Vector3.MoveTowards (transform.position, end, moveSpeed);
       yield return null;
     }
+
   }
 
   public enum CommandType
