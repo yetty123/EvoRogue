@@ -27,6 +27,7 @@ public class Enemy : MonoBehaviour {
 	  rows = MapGenerator.Instance.mapHeight;
     cols = MapGenerator.Instance.mapWidth;
 	}
+  
 
   /// <summary>
   /// Try to make a move
@@ -90,7 +91,8 @@ public class Enemy : MonoBehaviour {
       DataMgr.Instance.currentLevel.enemiesKilled += 1;
       GameMgr.Instance.KillEnemy (this);
       Destroy (gameObject);
-      return 100;
+      DataMgr.Instance.score += EvolutionMgr.Instance.fitness(this);
+      return 10;
     }
     return 0;
   }
@@ -111,6 +113,7 @@ public class Enemy : MonoBehaviour {
       transform.position = Vector3.MoveTowards (transform.position, end, moveSpeed);
       yield return null;
     }
+
   }
 
   public enum CommandType

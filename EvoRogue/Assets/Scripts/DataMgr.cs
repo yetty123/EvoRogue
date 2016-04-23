@@ -21,6 +21,7 @@ public class DataMgr : MonoBehaviour {
   float totalAvgRoomWidth;
   float totalAvgRoomHeight;
   int totalRoomsEntered;
+  public int score;
   
   // Averages
   public float averageMoves;
@@ -54,6 +55,7 @@ public class DataMgr : MonoBehaviour {
     totalAvgRoomWidth = 0;
     totalAvgRoomHeight = 0;
     totalRoomsEntered = 0;
+    score = 0;
 
     // Initialize all per-level averages
     averageMoves = 0;

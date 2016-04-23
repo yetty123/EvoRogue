@@ -21,7 +21,7 @@ public class EvolutionMgr : MonoBehaviour
 
     // fitness function - which current enemies did the best?
     // fitness is how it is for stats, combined with how it did in combat
-    int fitness(int index)
+    public int fitness(int index)
     {
         // ADD IN SOMETHING ABOUT BEING ALIVE IF TURNS IN COMBAT IS MORE THAN 0
         Enemy enemy = population.ElementAt(index);
@@ -29,8 +29,17 @@ public class EvolutionMgr : MonoBehaviour
         return enemy.stats.damageDone + enemy.stats.combatTurns + statNormalization;
     }
 
+    // fitness function - which current enemies did the best?
+    // fitness is how it is for stats, combined with how it did in combat
+    public int fitness(Enemy enemy)
+    {
+        // ADD IN SOMETHING ABOUT BEING ALIVE IF TURNS IN COMBAT IS MORE THAN 0
+        int statNormalization = enemy.stats.attackPower + enemy.stats.defense + enemy.stats.maxHealth;
+        return enemy.stats.damageDone + enemy.stats.combatTurns + statNormalization;
+    }
+
     // generate the next level's enemies
-  public List<EnemyData> Evolve()
+    public List<EnemyData> Evolve()
     {
         // calculate fitness values
         List<int> fitnessVals = new List<int>();
