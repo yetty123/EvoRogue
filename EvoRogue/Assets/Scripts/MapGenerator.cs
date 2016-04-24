@@ -195,6 +195,7 @@ public class MapGenerator : MonoBehaviour
     {
       int roomNum = Random.Range (0, rooms.Count);
       Point randPos = GetWalkablePoint (rooms [roomNum]);
+      map [randPos.y] [randPos.x] = Tile.Path;
       ClearAPath (new Vector2(randPos.x, randPos.y), exitPos, PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer, 80);
       Debug.Log (randPos.x + " " + randPos.y);
       var newEnemy = (GameObject)Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
@@ -683,8 +684,8 @@ public class MapGenerator : MonoBehaviour
         }
         else if (map [y] [x] == Tile.Path)
         {
-          //tile = groundTiles [0];
-          tile = groundTiles [1];
+          tile = groundTiles [0];
+          //tile = groundTiles [1];
           // ^ uncomment to see places where obstacles can't be placed
         }
         else if (map [y] [x] == Tile.InnerWall)
