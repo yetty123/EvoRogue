@@ -1,7 +1,7 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvoRogue.CSharp", "EvoRogue.CSharp.csproj", "{972CB64D-B2B3-0B36-865A-D870F92A1266}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{ABD52094-5BEF-2D94-8972-9D56FCCFE769}") = "EvoRogue", "Assembly-CSharp.csproj", "{7DDBB165-579C-F4A2-5C84-27A1DCDBA0E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +9,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{972CB64D-B2B3-0B36-865A-D870F92A1266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{972CB64D-B2B3-0B36-865A-D870F92A1266}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{972CB64D-B2B3-0B36-865A-D870F92A1266}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{972CB64D-B2B3-0B36-865A-D870F92A1266}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDBB165-579C-F4A2-5C84-27A1DCDBA0E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DDBB165-579C-F4A2-5C84-27A1DCDBA0E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DDBB165-579C-F4A2-5C84-27A1DCDBA0E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DDBB165-579C-F4A2-5C84-27A1DCDBA0E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal
