@@ -46,7 +46,7 @@ public class MapGenerator : MonoBehaviour
     {
       mapWidth = Mathf.Max (Mathf.RoundToInt(prevLevel.mapWidth * 0.75f), 20);
       mapHeight = Mathf.Max (Mathf.RoundToInt(prevLevel.mapHeight * 0.75f), 20);
-      numRooms = new Point (Mathf.Max(2, Mathf.RoundToInt(prevLevel.numRooms * 0.5f)), Mathf.Min(Mathf.RoundToInt(prevLevel.numMoves * 2.0f), 8));
+      numRooms = new Point (Mathf.Max(2, Mathf.RoundToInt(prevLevel.numRooms * 0.5f)), Mathf.Min(Mathf.RoundToInt(prevLevel.numRooms * 2.0f), 8));
       roomWidth = new Point (3, Mathf.Min(Mathf.RoundToInt(prevLevel.averageRoomWidth * 1.5f), 5));
       roomHeight = new Point (3, Mathf.Min(Mathf.RoundToInt(prevLevel.averageRoomHeight * 1.5f), 5));
       innerWallDensity = 0.25f;
@@ -105,6 +105,9 @@ public class MapGenerator : MonoBehaviour
     // and mark these tiles so they can't be blocked
     ClearAPath (new Vector2 (playerX, playerY), new Vector2 (exitPoint.x, exitPoint.y), PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer, 80);
 
+    // Place the enemies
+    GenerateEnemies (new Vector2 (exitPoint.x, exitPoint.y));
+
     // Destroy the current representation
     // of the map that we needed for initial A*
     Destroy(levelMap);
@@ -113,7 +116,6 @@ public class MapGenerator : MonoBehaviour
     // Add the obstacles and re-instantiate the tiles
     AddInteralObstacles();
     InstantiateTiles ();
-    GenerateEnemies ();
     InformDataManager ();
   }
 
@@ -172,7 +174,7 @@ public class MapGenerator : MonoBehaviour
   /// <summary>
   /// Generates the enemies.
   /// </summary>
-  void GenerateEnemies()
+   void GenerateEnemies(Vector2 exitPos)
   {
     List<GameObject> tempEnemy = new List<GameObject> ();
     List<EnemyData> nextGen = new List<EnemyData>();
@@ -193,6 +195,7 @@ public class MapGenerator : MonoBehaviour
     {
       int roomNum = Random.Range (0, rooms.Count);
       Point randPos = GetWalkablePoint (rooms [roomNum]);
+      ClearAPath (new Vector2(randPos.x, randPos.y), exitPos, PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer, 80);
       Debug.Log (randPos.x + " " + randPos.y);
       var newEnemy = (GameObject)Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
       if (nextGen.Count > 0 && nextGen.Count > i)
@@ -680,8 +683,8 @@ public class MapGenerator : MonoBehaviour
         }
         else if (map [y] [x] == Tile.Path)
         {
-          tile = groundTiles [0];
-          //tile = groundTiles [6];
+          //tile = groundTiles [0];
+          tile = groundTiles [1];
           // ^ uncomment to see places where obstacles can't be placed
         }
         else if (map [y] [x] == Tile.InnerWall)
