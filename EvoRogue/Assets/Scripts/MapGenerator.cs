@@ -97,8 +97,10 @@ public class MapGenerator : MonoBehaviour
     // Place the Player and Exit
     float playerX = rooms[0].X + Mathf.Floor(rooms[0].Width / 2);
     float playerY = rooms[0].Y + Mathf.Floor(rooms[0].Height / 2);
+    map [playerY] [playerX] = Tile.Path;
     GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
     Point exitPoint = GetWalkablePoint (rooms [1]);
+    map [exitPoint.y] [exitPoint.x] = Tile.Path;
     Instantiate (exit, new Vector3 (exitPoint.x, exitPoint.y, -1.0f), Quaternion.identity);
 
     // Clear a path from the Player to the Exit
