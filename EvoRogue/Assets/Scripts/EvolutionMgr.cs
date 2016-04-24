@@ -69,15 +69,15 @@ public class EvolutionMgr : MonoBehaviour
         }
         average = total / fitnessVals.Count;
 
-            
+        List<Enemy> parents = new List<Enemy>();
 
         // remove below average performance enemies
         for (int i = 0; i < fitnessVals.Count; i++)
         {
-            if (population.ElementAt(i) != null) { 
-              if (fitnessVals.ElementAt(i) < average) {
-                  population.RemoveAt(i);
-              }
+            if (population.ElementAt(i)) { 
+              if (fitnessVals.ElementAt(i) > average) {
+                    parents.Add(population.ElementAt(i));
+                }
             }
         }
 
@@ -85,13 +85,13 @@ public class EvolutionMgr : MonoBehaviour
         Enemy mom;
         Enemy dad;
         int mutationChance = 0;
-        // for now, constant 5 enemies per level
-        for (int i = 0; i < 5; i++)
+        // generate enough enemies to fill the next level
+        for (int i = 0; i < MapGenerator.Instance.numEnemies; i++)
         {
             Debug.Log (population.Count);
             // create a child based on two high fitness enemies
-            mom = population[Random.Range(0, population.Count)];
-            dad = population[Random.Range(0, population.Count)];
+            mom = parents[Random.Range(0, parents.Count)];
+            dad = parents[Random.Range(0, parents.Count)];
             EnemyData child = new EnemyData();
             child.SetAttackPower(mom.GetAttackPower() + 1);
             child.SetHealth(dad.GetMaxHealth() + 1);
