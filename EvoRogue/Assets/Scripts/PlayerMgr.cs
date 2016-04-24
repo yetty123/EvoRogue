@@ -112,10 +112,10 @@ public class PlayerMgr : MonoBehaviour
 
   public void LevelUp()
   {
-    health += 1;
-    maxHealth += 1;
-    attackPower += 1;
-    defense += 1;
+    health += level;
+    maxHealth += level;
+    attackPower += level;
+    defense += level;
     level += 1;
     HUDMgr.Instance.PrintAction("You leveled up! You are now level " + level);
   }
