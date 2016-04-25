@@ -8,7 +8,9 @@ public class PlayerController : MonoBehaviour
   public float moveSpeed;
   public bool moving;
   int experience;
-
+int maxEnergy = 3;
+	int currentEnergy = 3; 
+	
   void Start ()
   {
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
@@ -35,10 +37,12 @@ public class PlayerController : MonoBehaviour
       {
         StartCoroutine (Move (move));
         moving = true;
+        currentEnergy--;
         DataMgr.Instance.currentLevel.numMoves += 1;
       }
       else if (checkValid.collider.gameObject.tag == "Enemy")
       {
+      	currentEnergy--;
         Attack (checkValid.collider.gameObject);
       }
     }
@@ -100,6 +104,9 @@ public class PlayerController : MonoBehaviour
     // Allows the player to move again
     // now that the current move is complete
     moving = false;
-    GameMgr.Instance.playersTurn = false;
+    if (currentEnergy == 0) {
+			GameMgr.Instance.playersTurn = false;
+			currentEnergy = maxEnergy;
+		}
   }
 }
