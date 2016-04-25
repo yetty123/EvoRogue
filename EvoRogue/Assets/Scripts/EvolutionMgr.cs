@@ -95,14 +95,14 @@ public class EvolutionMgr : MonoBehaviour
         {
             Debug.Log (population.Count);
             // create a child based on two high fitness enemies
-            mom = parents[Random.Range(0, parents.Count)];
-            dad = parents[Random.Range(0, parents.Count)];
+            mom = population[Random.Range(0, population.Count)];
+            dad = population[Random.Range(0, population.Count)];
             EnemyData child = new EnemyData();
-            child.SetAttackPower(mom.GetAttackPower() + 1);
-            child.SetHealth(dad.GetMaxHealth() + 1);
-            child.SetDefense(mom.GetDefense() + 1);
-            child.SetEnergy(dad.GetEnergy() + 1);
-            child.SetAccuracy(mom.GetAccuracy() + 1);
+			child.SetAttackPower(mom.stats.attackPower + 1);
+			child.SetHealth(dad.stats.maxHealth + 1);
+			child.SetDefense(mom.stats.defense + 1);
+			child.SetEnergy(dad.stats.energy + 1);
+			child.SetAccuracy(mom.stats.accuracy + 1);
 
             // small chance to mutate the child
             mutationChance = UnityEngine.Random.Range(0, 101);
