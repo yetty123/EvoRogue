@@ -46,6 +46,8 @@ public class Enemy : MonoBehaviour
 			yield return null;
 		}
 
+		GameMgr.Instance.EnemyDoneMoving ();
+
 	}
 
 	/// <summary>
