@@ -80,6 +80,11 @@ public class EvolutionMgr : MonoBehaviour
                 }
             }
         }
+        // prevent parent access out of bounds error from an edge case
+        if (parents.Count == 0)
+        {
+            parents.Add(population.ElementAt(Random.Range(0, population.Count)));
+        }
 
         List<EnemyData> nextGen = new List<EnemyData>();
         Enemy mom;
@@ -146,7 +151,7 @@ public class EvolutionMgr : MonoBehaviour
       EnemyData child = new EnemyData();
       child.SetAttackPower(UnityEngine.Random.Range(1,4));
       child.SetHealth(UnityEngine.Random.Range(1, 4));
-      child.SetDefense(UnityEngine.Random.Range(1, 4));
+      child.SetDefense(UnityEngine.Random.Range(1, PlayerMgr.Instance.attackPower));
       child.SetEnergy(UnityEngine.Random.Range(1, 4));
       child.SetAccuracy(.75F);
 

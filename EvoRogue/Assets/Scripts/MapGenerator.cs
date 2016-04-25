@@ -97,8 +97,10 @@ public class MapGenerator : MonoBehaviour
     // Place the Player and Exit
     float playerX = rooms[0].X + Mathf.Floor(rooms[0].Width / 2);
     float playerY = rooms[0].Y + Mathf.Floor(rooms[0].Height / 2);
+    map [(int)playerY] [(int)playerX] = Tile.Path;
     GameObject.Find ("Player").gameObject.transform.position = new Vector2 (playerX, playerY);
     Point exitPoint = GetWalkablePoint (rooms [1]);
+    map [exitPoint.y] [exitPoint.x] = Tile.Path;
     Instantiate (exit, new Vector3 (exitPoint.x, exitPoint.y, -1.0f), Quaternion.identity);
 
     // Clear a path from the Player to the Exit
@@ -195,6 +197,7 @@ public class MapGenerator : MonoBehaviour
     {
       int roomNum = Random.Range (0, rooms.Count);
       Point randPos = GetWalkablePoint (rooms [roomNum]);
+      map [randPos.y] [randPos.x] = Tile.Path;
       ClearAPath (new Vector2(randPos.x, randPos.y), exitPos, PlayerMgr.Instance.gameObject.GetComponent<PlayerController> ().obstacleLayer, 80);
       Debug.Log (randPos.x + " " + randPos.y);
       var newEnemy = (GameObject)Instantiate (enemy, new Vector2 (randPos.x, randPos.y), Quaternion.identity);
@@ -683,8 +686,8 @@ public class MapGenerator : MonoBehaviour
         }
         else if (map [y] [x] == Tile.Path)
         {
-          //tile = groundTiles [0];
-          tile = groundTiles [1];
+          tile = groundTiles [0];
+          //tile = groundTiles [1];
           // ^ uncomment to see places where obstacles can't be placed
         }
         else if (map [y] [x] == Tile.InnerWall)
