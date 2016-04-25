@@ -10,9 +10,11 @@ public class PlayerController : MonoBehaviour
   int experience;
 int maxEnergy = 3;
 	int currentEnergy = 3; 
-	
+	public static PlayerController Instance;
+
   void Start ()
   {
+	Instance = this;
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
     moving = false;
   }
@@ -82,6 +84,12 @@ int maxEnergy = 3;
         PlayerMgr.Instance.LevelUp();
       }
     }
+
+		moving = false;
+		if (currentEnergy == 0) {
+			GameMgr.Instance.playersTurn = false;
+			currentEnergy = maxEnergy;
+		}
   }
 
   /// <summary>
