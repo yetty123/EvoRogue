@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerMgr : MonoBehaviour 
 {
@@ -17,6 +18,7 @@ public class PlayerMgr : MonoBehaviour
   public int experience;
   public int maxExperience;
   public int level;
+	float t= 0;
 
   void Awake()
   {
@@ -66,9 +68,13 @@ public class PlayerMgr : MonoBehaviour
   {
     int damage = Mathf.Max(attack - defense, 0);
     DataMgr.Instance.currentLevel.damageTaken += damage;
-    health -= damage;
-    Debug.Log ("Enemy attacks Player for: " + damage + " damage!");
-    HUDMgr.Instance.PrintAction ("Enemy attacks Player for: " + damage + " damage!");
+	Debug.Log ("Enemy attacks Player for: " + damage + " damage!");
+	HUDMgr.Instance.PrintAction ("Enemy attacks Player for: " + damage + " damage!");
+
+		if ((health -= damage) <= 0) {
+			HUDMgr.Instance.PrintAction ("PLAYER HAS DIED!!!");
+			PlayerController.Instance.gameObject.SetActive (false);
+		}
   }
 
   // check if you have enough experience to level up
