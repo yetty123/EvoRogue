@@ -132,7 +132,7 @@ public class MapGenerator : MonoBehaviour
       map [(int)start.y] [(int)start.x] = Tile.Path;
       map [(int)end.y] [(int)end.x] = Tile.Path;
     }
-    Point pathPoint = Pathfinding.Instance.MovePickerA (start, end, obstacleLayer);
+    Point pathPoint = Pathfinding.Instance.MovePickerA (new Point(start), new Point(end), obstacleLayer);
     if (start.x != end.x || start.y != end.y)
     {
       if (pathPoint.x == -1 && pathPoint.y == -1)
