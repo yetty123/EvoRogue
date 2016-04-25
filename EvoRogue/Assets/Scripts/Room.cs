@@ -14,6 +14,12 @@ public class Point
     this.y = -1;
   }
 
+public Point(Vector3 location)
+  {
+		this.x = (int)location.x;
+		this.y = (int)location.y;
+  }
+
   public Point(int x, int y)
   {
     this.x = x;
@@ -30,6 +36,11 @@ public class Point
   {
     return new Point(p1.x + p2.x, p1.y + p2.y);
   }
+
+public static Point operator -(Point p1, Point p2) 
+	{
+		return new Point(p1.x - p2.x, p1.y - p2.y);
+	}
 
   public static bool operator !=(Point p1, Point p2) 
   {
