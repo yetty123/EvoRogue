@@ -86,7 +86,7 @@ public class GameMgr : MonoBehaviour {
     yield return new WaitForSeconds (0.1f); 
     for (int i = 0; i < enemies.Count; i++)
     {
-      enemies[i].TryMove ();
+     StartCoroutine (enemies [i].TryMove ());
       // Wait to prevent enemies from occupying
       // the same tile.
       yield return new WaitForSeconds (0.01f);
