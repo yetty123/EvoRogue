@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,6 +10,7 @@ public class GameMgr : MonoBehaviour {
   public List<Enemy> enemies;
   public List<Enemy> previousGen;
   private bool enemiesMoving;
+	int enemiesDone = 0;
 
 	void Awake () {
     enemies = new List<Enemy> ();
@@ -89,10 +90,20 @@ public class GameMgr : MonoBehaviour {
      StartCoroutine (enemies [i].TryMove ());
       // Wait to prevent enemies from occupying
       // the same tile.
-      yield return new WaitForSeconds (0.01f);
+      yield return new WaitForSeconds (0.05f);
     }
-
-    playersTurn = true;
-    enemiesMoving = false;
+		yield return new WaitForSeconds (0.1f); 
+    
   }
+
+	//called when an enemy is done moving
+	public void EnemyDoneMoving()
+	{
+		if (enemiesDone++ == enemies.Count-1) {
+			playersTurn = true;
+			enemiesMoving = false;
+			enemiesDone = 0;
+		}
+	}
+
 }
