@@ -89,6 +89,10 @@ public class GameMgr : MonoBehaviour {
     // Prevent enemies from moving for a time while Player is moving
     enemiesMoving = true;
     yield return new WaitForSeconds (0.1f); 
+    
+    if(enemies.Count > 0)
+    {
+    
     for (int i = 0; i < enemies.Count; i++)
     {
      StartCoroutine (enemies [i].TryMove ());
@@ -97,7 +101,14 @@ public class GameMgr : MonoBehaviour {
       yield return new WaitForSeconds (0.05f);
     }
 		yield return new WaitForSeconds (0.1f); 
-    
+    }
+    else
+    {
+    	playersTurn = true;
+			enemiesMoving = false;
+    	
+    	
+    }
   }
 
 	//called when an enemy is done moving
