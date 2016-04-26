@@ -49,6 +49,10 @@ public class GameMgr : MonoBehaviour {
     enemies.Clear ();
     DataMgr.Instance.PrepareForNextLevel ();
     MapGenerator.Instance.GenerateLevel ();
+    playersTurn = true;
+		enemiesMoving = false;
+		enemiesDone = 0;
+		PlayerController.Instance.currentEnergy = PlayerController.Instance.maxEnergy;
   }
 
   /// <summary>
