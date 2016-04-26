@@ -8,8 +8,8 @@ public class PlayerController : MonoBehaviour
   public float moveSpeed;
   public bool moving;
   int experience;
-int maxEnergy = 3;
-	int currentEnergy = 3; 
+public int maxEnergy = 3;
+	public int currentEnergy = 3; 
 	public static PlayerController Instance;
 
   void Start ()
