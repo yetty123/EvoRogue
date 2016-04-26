@@ -47,12 +47,14 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\DataMgr.cs" />
      <Compile Include="Assets\Scripts\Enemy.cs" />
+     <Compile Include="Assets\Scripts\EnemyData.cs" />
      <Compile Include="Assets\Scripts\EvolutionMgr.cs" />
      <Compile Include="Assets\Scripts\FollowCamera.cs" />
      <Compile Include="Assets\Scripts\GameMgr.cs" />
      <Compile Include="Assets\Scripts\HUDMgr.cs" />
      <Compile Include="Assets\Scripts\LevelExit.cs" />
      <Compile Include="Assets\Scripts\MapGenerator.cs" />
+     <Compile Include="Assets\Scripts\Node.cs" />
      <Compile Include="Assets\Scripts\Pathfinding.cs" />
      <Compile Include="Assets\Scripts\PerceptionField.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />

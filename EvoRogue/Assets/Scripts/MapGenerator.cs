@@ -217,7 +217,7 @@ public class MapGenerator : MonoBehaviour
   Point GetWalkablePoint(Room room)
   {
     Point chosen = room.GetRandomPoint ();
-    int tries = 40;
+    int tries = 80;
     while (map [chosen.y] [chosen.x] != Tile.Ground)
     {
       chosen = room.GetRandomPoint ();
@@ -297,7 +297,7 @@ public class MapGenerator : MonoBehaviour
     Point endPoint = leftPt;
     for (int x = leftPt.x; x < rightPt.x; x++)
     {
-      map [leftPt.y] [x] = Tile.Ground;
+      map [leftPt.y] [x] = Tile.Path;
       endPoint = new Point (x, leftPt.y);
     }
     return endPoint;
@@ -313,7 +313,7 @@ public class MapGenerator : MonoBehaviour
   {
     for (int y = topPt.y; y <= bottomPt.y; y++)
     {
-      map [y] [topPt.x] = Tile.Ground;
+      map [y] [topPt.x] = Tile.Path;
     }
   }
 
@@ -686,8 +686,8 @@ public class MapGenerator : MonoBehaviour
         }
         else if (map [y] [x] == Tile.Path)
         {
-          tile = groundTiles [0];
-          //tile = groundTiles [1];
+          //tile = groundTiles [0];
+          tile = groundTiles [1];
           // ^ uncomment to see places where obstacles can't be placed
         }
         else if (map [y] [x] == Tile.InnerWall)
