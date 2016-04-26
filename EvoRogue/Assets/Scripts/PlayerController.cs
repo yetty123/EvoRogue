@@ -12,9 +12,13 @@ public int maxEnergy = 3;
 	public int currentEnergy = 3; 
 	public static PlayerController Instance;
 
+void Awake()
+	{
+		Instance = this;
+	}
+
   void Start ()
   {
-	Instance = this;
     obstacleLayer |= 1 << LayerMask.NameToLayer ("Enemy");
     moving = false;
   }
