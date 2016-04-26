@@ -25,6 +25,7 @@ public class EnemyData
 		this.combatTurns = 0;
 		this.energy = 1;
 		this.accuracy = 1;
+		this.range = 2;
 		this.alive = true;
 	}
 
